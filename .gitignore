@@ -1,0 +1,29 @@
+# Logs
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build output
+.dist/
+dist/
+.vite/
+
+# Env files (do not commit secrets)
+.env
+.env.*
+!.env.example
+!.env.development.example
+!.env.production.example
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/

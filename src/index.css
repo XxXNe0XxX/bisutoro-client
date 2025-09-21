@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #120d4f;
+  --color-secondary: #5a5680;
+  --color-background: #ebeafa;
+  --color-text: #000000;
+  --color-info: #0369a1;
+  --color-success: #157f3c;
+  --color-warning: #fabd23;
+  --color-danger: #ee4343;
+  --primary: #120d4f;
+  --secondary: #5a5680;
+  --background: #ebeafa;
+  --text: #000000;
+  --muted: #818181;
+  --text-contrast: #ffffff;
+  /* Font family variables to match tailwind.config.js */
+  --font-inter: "Inter Variable";
+  --font-lusitana: "Lusitana";
+  --font-istok: "Istok Web";
+  --font-oswald: "Oswald Variable";
+}
+@layer base {
+  .dark {
+    --color-primary: #8e89f5;
+    --color-secondary: #9c97c9;
+    --color-background: #0e0d1a;
+    --color-info: #0369a1;
+    --color-success: #157f3c;
+    --color-warning: #fabd23;
+    --color-danger: #ee4343;
+    --primary: #8e89f5;
+    --secondary: #9c97c9;
+    --background: #0e0d1a;
+    --text: #ffffff;
+    --muted: #b3b3b3;
+    --text-contrast: #000000;
+  }
+  /* Set default app font */
+  body {
+    font-family: var(--font-inter), sans-serif;
+  }
+}
+
+/* Single-class color utilities that adapt automatically to light/dark via CSS variables. */
+@layer utilities {
+  /* Background colors */
+  .bg-primary {
+    background-color: var(--primary);
+  }
+  .bg-secondary {
+    background-color: var(--secondary);
+  }
+  .bg-info {
+    background-color: var(--color-info);
+  }
+  .bg-success {
+    background-color: var(--color-success);
+  }
+  .bg-warning {
+    background-color: var(--color-warning);
+  }
+  .bg-danger {
+    background-color: var(--color-danger);
+  }
+  .bg-background {
+    background-color: var(--background);
+  }
+  .bg-primary-soft {
+    background-color: color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+  .bg-text {
+    background-color: var(--text);
+  }
+  .bg-text-contrast {
+    background-color: var(--text-contrast);
+  }
+  /* Text colors */
+  .text-primary {
+    color: var(--primary);
+  }
+  .text-secondary {
+    color: var(--secondary);
+  }
+  .text-background {
+    color: var(--background);
+  }
+  .text-info {
+    color: var(--color-info);
+  }
+  .text-success {
+    color: var(--color-success);
+  }
+  .text-warning {
+    color: var(--color-warning);
+  }
+  .text-danger {
+    color: var(--color-danger);
+  }
+  .text-base-fg {
+    color: var(--text);
+  }
+  .text-muted {
+    color: var(--muted);
+  }
+  .text-contrast {
+    color: var(--text-contrast);
+  }
+
+  /* Border colors */
+  .border-primary {
+    border-color: var(--primary);
+  }
+  .border-secondary {
+    border-color: var(--secondary);
+  }
+  .border-info {
+    border-color: var(--color-info);
+  }
+  .border-success {
+    border-color: var(--color-success);
+  }
+  .border-warning {
+    border-color: var(--color-warning);
+  }
+  .border-danger {
+    border-color: var(--color-danger);
+  }
+  /* Ring colors */
+  .ring-primary {
+    outline: var(--color-primary);
+  }
+  /* Fonts */
+  .font-istok {
+    font-family: var(--font-istok);
+  }
+  .font-oswald {
+    font-family: var(--font-oswald);
+  }
+  .font-lusitana {
+    font-family: var(--font-lusitana);
+  }
+  .font-inter {
+    font-family: var(--font-inter);
+  }
+}
