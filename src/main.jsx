@@ -6,6 +6,7 @@ import "@fontsource-variable/inter";
 import "@fontsource/lusitana";
 import "@fontsource/istok-web";
 import "@fontsource-variable/oswald";
+import "@fontsource-variable/montserrat";
 import App from "./App.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./auth/AuthContext";
