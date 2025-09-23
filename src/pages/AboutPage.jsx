@@ -16,7 +16,7 @@ import {
 } from "react-icons/fa6";
 import ReservationButton from "../components/ui/ReservationButton";
 import { useQuery } from "@tanstack/react-query";
-import { getPublicAppSettings, trackPhoneAction } from "../lib/api";
+import { getPublicAppSettings, trackPhoneAction, trackEmailAction } from "../lib/api";
 
 export default function AboutPage() {
   const settingsQ = useQuery({
@@ -110,6 +110,12 @@ export default function AboutPage() {
                 className="bg-primary text-base-fg p-2 rounded-2xl"
                 href={`mailto:${settings.contact_email}`}
                 rel="noopener noreferrer"
+                onClick={() =>
+                  trackEmailAction({
+                    email: settings.contact_email,
+                    action: "click",
+                  })
+                }
               >
                 <li className="flex items-center justify-between gap-2 w-full px-3">
                   <div className="flex items-center gap-2">

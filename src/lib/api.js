@@ -283,6 +283,32 @@ export async function trackPhoneAction({ phone, action }) {
   return { ok: true };
 }
 
+export async function trackEmailAction({ email, action }) {
+  const payload = { email, action };
+  // Use sendBeacon when possible to avoid being canceled by navigation
+  try {
+    const url = `${BASE_URL}/api/track/email`;
+    if (navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(payload)], {
+        type: "application/json",
+      });
+      const ok = navigator.sendBeacon(url, blob);
+      if (ok) return { ok: true };
+    }
+  } catch {
+    // ignore and use fetch fallback
+  }
+  try {
+    await request(`/api/track/email`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    // non-critical failure
+  }
+  return { ok: true };
+}
+
 // ---- Auth endpoints ----
 export async function login({ email, password }, remember = true) {
   const res = await request("/api/login", {

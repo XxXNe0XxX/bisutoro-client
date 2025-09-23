@@ -5,6 +5,7 @@ import {
   FaGoogle,
   FaGlobe,
   FaPhone,
+  FaRegEnvelope,
   FaLocationDot,
 } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
@@ -304,6 +305,9 @@ function externalIcon(url) {
     if (typeof url === "string" && url.startsWith("tel:")) {
       return <FaPhone className="text-primary" />;
     }
+    if (typeof url === "string" && url.startsWith("mailto:")) {
+      return <FaRegEnvelope className="text-primary" />;
+    }
     const u = new URL(url);
     const host = u.hostname.toLowerCase();
     const path = u.pathname.toLowerCase();
@@ -324,6 +328,9 @@ function externalIcon(url) {
     if (typeof url === "string" && url.startsWith("tel:")) {
       return <FaPhone className="text-primary" />;
     }
+    if (typeof url === "string" && url.startsWith("mailto:")) {
+      return <FaRegEnvelope className="text-primary" />;
+    }
     return <FaGlobe className="text-primary" />;
   }
 }
@@ -332,6 +339,11 @@ function domainText(url) {
   try {
     if (typeof url === "string" && url.startsWith("tel:")) {
       return url.slice(4).replace(/[^\d+]/g, "") || "phone";
+    }
+    if (typeof url === "string" && url.startsWith("mailto:")) {
+      const addr = url.slice(7).trim().toLowerCase();
+      const domain = addr.split("@")[1] || "email";
+      return domain || "email";
     }
     const u = new URL(url);
     const host = u.hostname.toLowerCase();
@@ -352,6 +364,9 @@ function domainText(url) {
   } catch {
     if (typeof url === "string" && url.startsWith("tel:")) {
       return url.slice(4).replace(/[^\d+]/g, "") || "phone";
+    }
+    if (typeof url === "string" && url.startsWith("mailto:")) {
+      return "email";
     }
     return "external";
   }
