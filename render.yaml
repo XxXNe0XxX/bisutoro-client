@@ -1,0 +1,23 @@
+# Render Blueprint for Bisutoro Client (Vite + React)
+
+services:
+  - name: bisutoro-client
+    type: web
+    runtime: static
+    branch: main
+
+    # Build and publish settings for Vite
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+
+    # SPA rewrite so client-side routing works on refresh/direct links
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    # Environment variables
+    # Render will prompt you for VITE_API_BASE_URL on first create. Set it to your API server URL.
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
