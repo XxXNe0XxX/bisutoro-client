@@ -68,8 +68,19 @@ function withTimeout(promise, ms = 10000) {
   return Promise.race([promise, timeout]);
 }
 
+function isAuthPath(path) {
+  // Normalize path only for decision (no URL join)
+  if (!path) return false;
+  return (
+    path.startsWith("/api/login") ||
+    path.startsWith("/api/logout") ||
+    path.startsWith("/api/token/refresh")
+  );
+}
+
 async function request(path, options = {}) {
   const url = `${BASE_URL}${path}`;
+  const disableAuthRetry = options.disableAuthRetry || isAuthPath(path);
   const doFetch = () =>
     withTimeout(
       fetch(url, {
@@ -86,7 +97,7 @@ async function request(path, options = {}) {
   try {
     logger.debug("API request", { path, method: options.method || "GET" });
     let res = await doFetch();
-    if (res.status === 401) {
+    if (res.status === 401 && AUTH_TOKEN && !disableAuthRetry) {
       // try refresh once
       logger.info("Access token expired; attempting refresh");
       const refreshed = await refreshAccessToken();
@@ -277,6 +288,7 @@ export async function login({ email, password }, remember = true) {
   const res = await request("/api/login", {
     method: "POST",
     body: JSON.stringify({ email, password, remember }),
+    disableAuthRetry: true,
   });
   // Expect { token, user }
   if (res?.token) setAuthToken(res.token, remember);
@@ -285,7 +297,7 @@ export async function login({ email, password }, remember = true) {
 
 export async function logout() {
   try {
-    await request("/api/logout", { method: "POST" });
+    await request("/api/logout", { method: "POST", disableAuthRetry: true });
   } catch {
     // ignore and proceed to clear tokens
   } finally {

@@ -36,13 +36,10 @@ export function AuthProvider({ children }) {
     // Listen for session-expired events from API layer
     const off = onAuthEvent(async (type) => {
       if (type === "session-expired") {
-        try {
-          await apiLogout();
-        } finally {
-          setUser(null);
-          // Redirect to login preserving destination
-          navigate("/login", { replace: true });
-        }
+        // Avoid network calls here to prevent loops; clear local state only
+        setAuthToken(null, true, true);
+        setUser(null);
+        navigate("/login", { replace: true });
       }
     });
     return off;
