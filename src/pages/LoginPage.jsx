@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/auth-context";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -57,9 +57,9 @@ export default function LoginPage() {
               type="button"
               aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute inset-y-0 right-0 px-3 text-sm text-muted hover:text-base-fg focus:outline-none"
+              className="absolute right-0 inset-y-0 px-3 text-sm text-muted hover:text-base-fg focus:outline-none"
             >
-              {showPassword ? "Hide" : "Show"}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
         </div>
