@@ -1,3 +1,4 @@
+import logger from "./logger";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const TOKEN_KEY = "auth_token";
 let AUTH_TOKEN = null;
@@ -83,14 +84,18 @@ async function request(path, options = {}) {
     );
 
   try {
+    logger.debug("API request", { path, method: options.method || "GET" });
     let res = await doFetch();
     if (res.status === 401) {
       // try refresh once
+      logger.info("Access token expired; attempting refresh");
       const refreshed = await refreshAccessToken();
       if (refreshed) {
+        logger.info("Refresh succeeded; retrying original request");
         res = await doFetch();
       } else {
         // Refresh failed; emit session expired
+        logger.warn("Refresh failed; emitting session-expired");
         emitAuthEvent("session-expired");
       }
     }
@@ -100,6 +105,7 @@ async function request(path, options = {}) {
       const err = new Error(`HTTP ${res.status}: ${text || res.statusText}`);
       // attach status for callers if needed
       err.status = res.status;
+      logger.warn("API non-OK response", { path, status: res.status });
       throw err;
     }
 
@@ -109,7 +115,7 @@ async function request(path, options = {}) {
     }
     return await res.text();
   } catch (err) {
-    console.error("API error:", err);
+    logger.error("API error", { message: err?.message, status: err?.status });
     throw err;
   }
 }
@@ -123,6 +129,7 @@ async function refreshAccessToken() {
 
   refreshPromise = (async () => {
     try {
+      logger.debug("Refreshing token");
       const res = await withTimeout(
         fetch(`${BASE_URL}/api/token/refresh`, {
           method: "POST",
@@ -135,8 +142,10 @@ async function refreshAccessToken() {
       const data = await res.json().catch(() => null);
       if (!data?.token) return false;
       setAuthToken(data.token, remember);
+      logger.info("Token refresh complete");
       return true;
     } catch {
+      logger.warn("Token refresh error");
       return false;
     } finally {
       refreshPromise = null;

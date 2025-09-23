@@ -1,12 +1,30 @@
-# React + Vite
+# Bisutoro Client (React + Vite + Tailwind)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Admin dashboard and public site for Bisutoro.
 
-Currently, two official plugins are available:
+## Setup
+1. Copy an env file:
+	- `.env.development.example` → `.env.development`
+	- Set `VITE_API_BASE_URL` to your API server (e.g. http://localhost:4000)
+2. Install deps: `npm install`
+3. Run dev: `npm run dev`
+4. Build: `npm run build`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Deploy (Render Static Site)
+This repo includes `render.yaml`. Render will build with:
+```
+npm ci --include=dev && npm run build
+```
+and publish `dist/`. Client-side routes are handled by a rewrite to `/index.html`.
 
-## Expanding the ESLint configuration
+You must set `VITE_API_BASE_URL` in Render (Environment tab) to your API URL.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Logging
+- A lightweight console logger is included for troubleshooting.
+- Control verbosity via `VITE_LOG_LEVEL`: `debug`, `info` (default in prod), `warn`, `error`, `silent`.
+- On startup, the app logs `{ env, prod, baseUrl }`.
+
+## Scripts
+- `npm run dev` — start dev server
+- `npm run build` — build for production
+- `npm run preview` — preview prod build locally
