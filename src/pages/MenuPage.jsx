@@ -193,7 +193,7 @@ export default function MenuPage() {
           placeholder="Search for a plate"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className=" border border-secondary text-base-fg p-2  rounded-2xl placeholder:text-gray-500 w-full  "
+          className=" border bg-background border-secondary text-base-fg p-2  rounded-2xl placeholder:text-gray-500 w-full  "
         />
       </div>
       <header className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  ">
