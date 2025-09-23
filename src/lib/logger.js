@@ -3,8 +3,8 @@
 
 const LEVELS = { debug: 10, info: 20, warn: 30, error: 40, silent: 50 };
 
-const envLevel = (import.meta.env.VITE_LOG_LEVEL || '').toLowerCase();
-const defaultLevel = import.meta.env.PROD ? 'info' : 'debug';
+const envLevel = (import.meta.env.VITE_LOG_LEVEL || "").toLowerCase();
+const defaultLevel = import.meta.env.PROD ? "info" : "debug";
 const levelName = LEVELS[envLevel] ? envLevel : defaultLevel;
 const threshold = LEVELS[levelName];
 
@@ -12,7 +12,7 @@ function ts() {
   try {
     return new Date().toISOString();
   } catch {
-    return '';
+    return "";
   }
 }
 
@@ -31,10 +31,10 @@ function makeLog(fn, lvl) {
 
 export const logger = {
   level: levelName,
-  debug: makeLog(console.debug.bind(console), 'debug'),
-  info: makeLog(console.info.bind(console), 'info'),
-  warn: makeLog(console.warn.bind(console), 'warn'),
-  error: makeLog(console.error.bind(console), 'error'),
+  debug: makeLog(console.debug.bind(console), "debug"),
+  info: makeLog(console.info.bind(console), "info"),
+  warn: makeLog(console.warn.bind(console), "warn"),
+  error: makeLog(console.error.bind(console), "error"),
 };
 
 export default logger;
