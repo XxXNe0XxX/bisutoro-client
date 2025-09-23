@@ -244,41 +244,41 @@ export default function MenuPage() {
       </div>
       {!query.trim() && (
         <header className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  ">
-        <div className="w-full">
-          <h1 className="text-3xl text-primary font-bold mb-2 ">Menu</h1>
-          <p className="text-muted max-w-prose">
-            Dive in our selection of traditionally crafted recipes, each
-            prepared with care and inspired by authentic culinary traditions.
-          </p>
-        </div>
-        <ul className="md:w-auto w-full text-start  border border-secondary rounded-2xl p-3  text-sm md:text-nowrap space-y-1">
-          <div className="flex justify-center pb-2 gap-2 *:w-full *:h-full items-center">
-            {publicSettings.data?.show_omakase_section !== false && (
-              <Link
-                to="/omakase"
-                className="bg-black md:w-full  inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-2xl border border-secondary/40 hover:scale-105 transition-transform text-contrast justify-center text-base-fg font-semibold"
-              >
-                <button className="bg-clip-text bg-gradient-to-br  from-yellow-300 to-yellow-50 flex items-center gap-2">
-                  <span className=" text-transparent">Omakase</span>
-                  <FaArrowRight className="text-white"></FaArrowRight>
-                </button>
-                <span
-                  className="i-heroicons-arrow-right-20-solid"
-                  aria-hidden
-                />
-              </Link>
-            )}
-            <ReservationButton></ReservationButton>
+          <div className="w-full">
+            <h1 className="text-3xl text-primary font-bold mb-2 ">Menu</h1>
+            <p className="text-muted max-w-prose">
+              Dive in our selection of traditionally crafted recipes, each
+              prepared with care and inspired by authentic culinary traditions.
+            </p>
           </div>
-          <li className=" max-w-prose text-base-fg">
-            -- Gluten free dishes are marked with{" "}
-            <span className=" bg-warning p-1 rounded-2xl text-xs">GF</span>
-          </li>
-          <li className=" max-w-prose text-base-fg">
-            -- Veggie options marked with{" "}
-            <span className=" bg-success p-1 rounded-2xl text-xs">VG</span>
-          </li>
-        </ul>
+          <ul className="md:w-auto w-full text-start  border border-secondary rounded-2xl p-3  text-sm md:text-nowrap space-y-1">
+            <div className="flex justify-center pb-2 gap-2 *:w-full *:h-full items-center">
+              {publicSettings.data?.show_omakase_section !== false && (
+                <Link
+                  to="/omakase"
+                  className="bg-black md:w-full  inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-2xl border border-secondary/40 hover:scale-105 transition-transform text-contrast justify-center text-base-fg font-semibold"
+                >
+                  <button className="bg-clip-text bg-gradient-to-br  from-yellow-300 to-yellow-50 flex items-center gap-2">
+                    <span className=" text-transparent">Omakase</span>
+                    <FaArrowRight className="text-white"></FaArrowRight>
+                  </button>
+                  <span
+                    className="i-heroicons-arrow-right-20-solid"
+                    aria-hidden
+                  />
+                </Link>
+              )}
+              <ReservationButton></ReservationButton>
+            </div>
+            <li className=" max-w-prose text-base-fg">
+              -- Gluten free dishes are marked with{" "}
+              <span className=" bg-warning p-1 rounded-2xl text-xs">GF</span>
+            </li>
+            <li className=" max-w-prose text-base-fg">
+              -- Veggie options marked with{" "}
+              <span className=" bg-success p-1 rounded-2xl text-xs">VG</span>
+            </li>
+          </ul>
         </header>
       )}
       {isLoading && (
@@ -460,7 +460,7 @@ export default function MenuPage() {
                       className="flex justify-between gap-4"
                     >
                       <Link to={`/menu/${item.id}`} className="group flex-1">
-                        <div className="flex gap-2 items-center font-medium ">
+                        <div className="flex gap-2 items-center font-medium  ">
                           <span className="group-active:underline group-hover:underline">
                             {item.name}
                           </span>
