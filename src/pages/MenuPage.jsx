@@ -185,7 +185,7 @@ export default function MenuPage() {
 
   return (
     <div className="space-y-6 relative  ">
-      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed  shadow px-3 bg-background/40 border-b border-x border-secondary w-full h-14 md:rounded-b-2xl mx-auto   md:top-0 backdrop-blur-2xl">
+      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed  shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto   md:top-0 backdrop-blur-2xl">
         <FaSearchengin className="w-auto h-6"></FaSearchengin>
         <input
           type="text"
