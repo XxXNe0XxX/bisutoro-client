@@ -45,15 +45,27 @@ export default function MenuPage() {
     queryFn: () => listCategories(),
   });
 
+  // Normalize category names for reliable matching (case, punctuation, accents)
+  const normalizeCatKey = (s) =>
+    String(s || "")
+      .normalize("NFKD")
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .replace(/\s+/g, " ");
+
   // Build an order map by category name (case-insensitive)
   const categoryOrder = useMemo(() => {
     const map = new Map();
     const list = Array.isArray(categoriesMeta.data) ? categoriesMeta.data : [];
     for (const c of list) {
-      const name = String(c.name || c.title || "")
-        .trim()
-        .toLowerCase();
-      const order = Number(c.sort_order);
+      const name = normalizeCatKey(c.name || c.title || "");
+      const raw = c?.sort_order;
+      const order =
+        raw === null || raw === undefined || String(raw).trim() === ""
+          ? NaN
+          : Number(raw);
       if (!name) continue;
       if (Number.isFinite(order)) {
         map.set(name, order);
@@ -67,19 +79,15 @@ export default function MenuPage() {
   const sortedCategories = useMemo(() => {
     const copy = Array.isArray(categories) ? [...categories] : [];
     copy.sort((a, b) => {
-      const aKey = String(a.name || "")
-        .trim()
-        .toLowerCase();
-      const bKey = String(b.name || "")
-        .trim()
-        .toLowerCase();
+      const aKey = normalizeCatKey(a.name || "");
+      const bKey = normalizeCatKey(b.name || "");
       const aoRaw = categoryOrder.get(aKey);
       const boRaw = categoryOrder.get(bKey);
       const ao = typeof aoRaw === "number" ? aoRaw : Number.POSITIVE_INFINITY;
       const bo = typeof boRaw === "number" ? boRaw : Number.POSITIVE_INFINITY;
       if (ao !== bo) return ao - bo;
-      // fallback stable name sort
-      return String(a.name).localeCompare(String(b.name));
+      // Keep original (stable) order if both orders equal (including Infinity)
+      return 0;
     });
     return copy;
   }, [categories, categoryOrder]);
@@ -400,75 +408,81 @@ export default function MenuPage() {
                 </section>
               )}
 
-            {filteredCategories.map((cat) => (
-              <section key={cat.name} className=" space-y-4 text-base-fg">
-                <h2 className="text-xl tracking-wider  border-b  bg-text text-contrast px-3 rounded-ee-2xl uppercase font-bold  ">
-                  {cat.name}
-                </h2>
-                <ul className="space-y-3">
-                  {(cat.items || []).map((item) => (
-                    <li
-                      key={item.id ?? item.name}
-                      className="flex justify-between gap-4"
-                    >
-                      <Link to={`/menu/${item.id}`} className="group flex-1">
-                        <div className="flex gap-2 items-center font-medium ">
-                          <span className="group-active:underline group-hover:underline">
-                            {item.name}
-                          </span>
-                          {(item.vegan === true ||
-                            item.vegan === 1 ||
-                            String(item.vegan) === "1" ||
-                            item.gluten_free === true ||
-                            item.gluten_free === 1 ||
-                            String(item.gluten_free) === "1") && (
-                            <div className="mt-1 flex gap-2 text-[10px]">
-                              {(item.vegan === true ||
-                                item.vegan === 1 ||
-                                String(item.vegan) === "1") && (
-                                <span className="px-1.5 py-0.5 rounded-2xl bg-success text-contrast">
-                                  VG
-                                </span>
-                              )}
-                              {(item.gluten_free === true ||
-                                item.gluten_free === 1 ||
-                                String(item.gluten_free) === "1") && (
-                                <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-contrast">
-                                  GF
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        <p className="text-xs text-muted">{item.description}</p>
-
-                        {Array.isArray(item.ingredients) &&
-                          item.ingredients.length > 0 && (
-                            <p className="mt-1 text-xs text-muted">
-                              <span>Ingredients:</span>{" "}
-                              {item.ingredients.join(" + ")}
-                            </p>
-                          )}
-                      </Link>
-                      <div className="text-right">
-                        <span className="font-semibold tabular-nums block">
-                          ${item.price}
-                        </span>
-                        {item.reviews?.avg_rating != null &&
-                          publicSettings.data?.show_average_rating_on_items ===
-                            true && (
-                            <span className="text-xs text-muted">
-                              ★ {item.reviews.avg_rating.toFixed(1)} (
-                              {item.reviews.count})
+            {filteredCategories
+              .sort((a, b) => {
+                a.sort_order < b.sort_order;
+              })
+              .map((cat) => (
+                <section key={cat.name} className=" space-y-4 text-base-fg">
+                  <h2 className="text-xl tracking-wider  border-b  bg-text text-contrast px-3 rounded-ee-2xl uppercase font-bold  ">
+                    {cat.name}
+                  </h2>
+                  <ul className="space-y-3">
+                    {(cat.items || []).map((item) => (
+                      <li
+                        key={item.id ?? item.name}
+                        className="flex justify-between gap-4"
+                      >
+                        <Link to={`/menu/${item.id}`} className="group flex-1">
+                          <div className="flex gap-2 items-center font-medium ">
+                            <span className="group-active:underline group-hover:underline">
+                              {item.name}
                             </span>
-                          )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
+                            {(item.vegan === true ||
+                              item.vegan === 1 ||
+                              String(item.vegan) === "1" ||
+                              item.gluten_free === true ||
+                              item.gluten_free === 1 ||
+                              String(item.gluten_free) === "1") && (
+                              <div className="mt-1 flex gap-2 text-[10px]">
+                                {(item.vegan === true ||
+                                  item.vegan === 1 ||
+                                  String(item.vegan) === "1") && (
+                                  <span className="px-1.5 py-0.5 rounded-2xl bg-success text-contrast">
+                                    VG
+                                  </span>
+                                )}
+                                {(item.gluten_free === true ||
+                                  item.gluten_free === 1 ||
+                                  String(item.gluten_free) === "1") && (
+                                  <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-contrast">
+                                    GF
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-muted">
+                            {item.description}
+                          </p>
+
+                          {Array.isArray(item.ingredients) &&
+                            item.ingredients.length > 0 && (
+                              <p className="mt-1 text-xs text-muted">
+                                <span>Ingredients:</span>{" "}
+                                {item.ingredients.join(" + ")}
+                              </p>
+                            )}
+                        </Link>
+                        <div className="text-right">
+                          <span className="font-semibold tabular-nums block">
+                            ${item.price}
+                          </span>
+                          {item.reviews?.avg_rating != null &&
+                            publicSettings.data
+                              ?.show_average_rating_on_items === true && (
+                              <span className="text-xs text-muted">
+                                ★ {item.reviews.avg_rating.toFixed(1)} (
+                                {item.reviews.count})
+                              </span>
+                            )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
           </div>
         </>
       )}
