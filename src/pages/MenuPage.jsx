@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaSearchengin } from "react-icons/fa6";
+import { ClipLoader } from "react-spinners";
 import {
   getMenu,
   getDailyMenu,
@@ -14,6 +15,8 @@ import ReservationButton from "../components/ui/ReservationButton";
 export default function MenuPage() {
   const [categories, setCategories] = useState([]);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searching, setSearching] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [showAllCats, setShowAllCats] = useState(false);
   const [filterVegan, setFilterVegan] = useState(false);
@@ -38,6 +41,22 @@ export default function MenuPage() {
     queryKey: ["daily-menu", today],
     queryFn: () => getDailyMenu(today),
   });
+
+  // Debounce query to provide UX spinner while searching
+  useEffect(() => {
+    const q = (query || "").trim();
+    if (!q) {
+      setDebouncedQuery("");
+      setSearching(false);
+      return;
+    }
+    setSearching(true);
+    const t = setTimeout(() => {
+      setDebouncedQuery(q);
+      setSearching(false);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [query]);
 
   // Fetch categories metadata to respect server-defined sort order
   const categoriesMeta = useQuery({
@@ -115,8 +134,8 @@ export default function MenuPage() {
       return true;
     };
     const dietary = available.filter(meetsDietary);
-    if (!query.trim()) return dietary;
-    const q = query.toLowerCase();
+    if (!debouncedQuery) return dietary;
+    const q = debouncedQuery.toLowerCase();
     return dietary.filter(
       (it) =>
         it.name?.toLowerCase().includes(q) ||
@@ -124,7 +143,7 @@ export default function MenuPage() {
         (Array.isArray(it.ingredients) &&
           it.ingredients.join(" ").toLowerCase().includes(q))
     );
-  }, [daily.data, query, filterVegan, filterGF]);
+  }, [daily.data, debouncedQuery, filterVegan, filterGF]);
 
   // Specials list is derived via `specials` and rendered conditionally
 
@@ -150,8 +169,8 @@ export default function MenuPage() {
     const scoped = activeCategory
       ? baseNonEmpty.filter((c) => c.name === activeCategory)
       : baseNonEmpty;
-    if (!query.trim()) return scoped;
-    const q = query.toLowerCase();
+    if (!debouncedQuery) return scoped;
+    const q = debouncedQuery.toLowerCase();
     return scoped
       .map((cat) => ({
         ...cat,
@@ -164,7 +183,7 @@ export default function MenuPage() {
         ),
       }))
       .filter((cat) => (cat.items || []).length > 0);
-  }, [sortedCategories, query, activeCategory, filterVegan, filterGF]);
+  }, [sortedCategories, debouncedQuery, activeCategory, filterVegan, filterGF]);
 
   // Build category buttons: include categories that have items (post dietary filters)
   const categoryButtons = useMemo(() => {
@@ -187,24 +206,44 @@ export default function MenuPage() {
 
   // Determine whether non-dietary filters are active (search or category)
   const nonDietaryFilterActive = useMemo(
-    () => Boolean(activeCategory) || Boolean((query || "").trim()),
-    [activeCategory, query]
+    () => Boolean(activeCategory) || Boolean((debouncedQuery || "").trim()),
+    [activeCategory, debouncedQuery]
   );
 
   return (
     <div className="space-y-6 relative  ">
-      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed  shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto   md:top-0 backdrop-blur-2xl">
-        <FaSearchengin className="w-auto h-6"></FaSearchengin>
-        <input
-          type="text"
-          id="item search"
-          placeholder="Search for a plate"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className=" border bg-background border-secondary text-base-fg p-2  rounded-2xl placeholder:text-gray-500 w-full  "
-        />
+      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl">
+        <FaSearchengin className="w-auto h-6" />
+        <div className="relative w-full">
+          <input
+            type="text"
+            id="item search"
+            placeholder="Search for a plate"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="border bg-background border-secondary text-base-fg p-2 pr-12 rounded-2xl placeholder:text-gray-500 w-full"
+          />
+          {/* Right adornment: spinner during searching, clear button when query filled */}
+          <div className="absolute inset-y-0 right-2 flex items-center">
+            {searching ? (
+              <ClipLoader size={18} color="var(--color-primary, #000)" />
+            ) : (
+              !!query.trim() && (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  className="text-muted hover:text-base-fg text-sm"
+                  onClick={() => setQuery("")}
+                >
+                  ✕
+                </button>
+              )
+            )}
+          </div>
+        </div>
       </div>
-      <header className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  ">
+      {!query.trim() && (
+        <header className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  ">
         <div className="w-full">
           <h1 className="text-3xl text-primary font-bold mb-2 ">Menu</h1>
           <p className="text-muted max-w-prose">
@@ -240,7 +279,8 @@ export default function MenuPage() {
             <span className=" bg-success p-1 rounded-2xl text-xs">VG</span>
           </li>
         </ul>
-      </header>
+        </header>
+      )}
       {isLoading && (
         <div className="space-y-4">
           <div className="h-6 w-40 rounded bg-primary-soft animate-pulse" />
@@ -408,81 +448,75 @@ export default function MenuPage() {
                 </section>
               )}
 
-            {filteredCategories
-              .sort((a, b) => {
-                a.sort_order < b.sort_order;
-              })
-              .map((cat) => (
-                <section key={cat.name} className=" space-y-4 text-base-fg">
-                  <h2 className="text-xl tracking-wider  border-b  bg-text text-contrast px-3 rounded-ee-2xl uppercase font-bold  ">
-                    {cat.name}
-                  </h2>
-                  <ul className="space-y-3">
-                    {(cat.items || []).map((item) => (
-                      <li
-                        key={item.id ?? item.name}
-                        className="flex justify-between gap-4"
-                      >
-                        <Link to={`/menu/${item.id}`} className="group flex-1">
-                          <div className="flex gap-2 items-center font-medium ">
-                            <span className="group-active:underline group-hover:underline">
-                              {item.name}
-                            </span>
-                            {(item.vegan === true ||
-                              item.vegan === 1 ||
-                              String(item.vegan) === "1" ||
-                              item.gluten_free === true ||
-                              item.gluten_free === 1 ||
-                              String(item.gluten_free) === "1") && (
-                              <div className="mt-1 flex gap-2 text-[10px]">
-                                {(item.vegan === true ||
-                                  item.vegan === 1 ||
-                                  String(item.vegan) === "1") && (
-                                  <span className="px-1.5 py-0.5 rounded-2xl bg-success text-contrast">
-                                    VG
-                                  </span>
-                                )}
-                                {(item.gluten_free === true ||
-                                  item.gluten_free === 1 ||
-                                  String(item.gluten_free) === "1") && (
-                                  <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-contrast">
-                                    GF
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          <p className="text-xs text-muted">
-                            {item.description}
-                          </p>
-
-                          {Array.isArray(item.ingredients) &&
-                            item.ingredients.length > 0 && (
-                              <p className="mt-1 text-xs text-muted">
-                                <span>Ingredients:</span>{" "}
-                                {item.ingredients.join(" + ")}
-                              </p>
-                            )}
-                        </Link>
-                        <div className="text-right">
-                          <span className="font-semibold tabular-nums block">
-                            ${item.price}
+            {filteredCategories.map((cat) => (
+              <section key={cat.name} className=" space-y-4 text-base-fg">
+                <h2 className="text-xl tracking-wider  border-b  bg-text text-contrast px-3 rounded-ee-2xl uppercase font-bold  ">
+                  {cat.name}
+                </h2>
+                <ul className="space-y-3 ">
+                  {(cat.items || []).map((item) => (
+                    <li
+                      key={item.id ?? item.name}
+                      className="flex justify-between gap-4"
+                    >
+                      <Link to={`/menu/${item.id}`} className="group flex-1">
+                        <div className="flex gap-2 items-center font-medium ">
+                          <span className="group-active:underline group-hover:underline">
+                            {item.name}
                           </span>
-                          {item.reviews?.avg_rating != null &&
-                            publicSettings.data
-                              ?.show_average_rating_on_items === true && (
-                              <span className="text-xs text-muted">
-                                ★ {item.reviews.avg_rating.toFixed(1)} (
-                                {item.reviews.count})
-                              </span>
-                            )}
+                          {(item.vegan === true ||
+                            item.vegan === 1 ||
+                            String(item.vegan) === "1" ||
+                            item.gluten_free === true ||
+                            item.gluten_free === 1 ||
+                            String(item.gluten_free) === "1") && (
+                            <div className="mt-1 flex gap-2 text-[10px]">
+                              {(item.vegan === true ||
+                                item.vegan === 1 ||
+                                String(item.vegan) === "1") && (
+                                <span className="px-1.5 py-0.5 rounded-2xl bg-success text-contrast">
+                                  VG
+                                </span>
+                              )}
+                              {(item.gluten_free === true ||
+                                item.gluten_free === 1 ||
+                                String(item.gluten_free) === "1") && (
+                                <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-contrast">
+                                  GF
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ))}
+
+                        <p className="text-xs text-muted">{item.description}</p>
+
+                        {Array.isArray(item.ingredients) &&
+                          item.ingredients.length > 0 && (
+                            <p className="mt-1 text-xs text-muted">
+                              <span>Ingredients:</span>{" "}
+                              {item.ingredients.join(" + ")}
+                            </p>
+                          )}
+                      </Link>
+                      <div className="text-right">
+                        <span className="font-semibold tabular-nums block">
+                          ${item.price}
+                        </span>
+                        {item.reviews?.avg_rating != null &&
+                          publicSettings.data?.show_average_rating_on_items ===
+                            true && (
+                            <span className="text-xs text-muted">
+                              ★ {item.reviews.avg_rating.toFixed(1)} (
+                              {item.reviews.count})
+                            </span>
+                          )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
           </div>
         </>
       )}
