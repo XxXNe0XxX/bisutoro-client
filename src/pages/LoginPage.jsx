@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [remember, setRemember] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -44,13 +45,23 @@ export default function LoginPage() {
         </div>
         <div className="space-y-1">
           <label className="text-sm text-muted">Password</label>
-          <input
-            type="password"
-            className="w-full rounded-2xl p-3 border border-secondary/40 bg-background text-base-fg"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="w-full rounded-2xl p-3 pr-12 border border-secondary/40 bg-background text-base-fg"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword((s) => !s)}
+              className="absolute inset-y-0 right-0 px-3 text-sm text-muted hover:text-base-fg focus:outline-none"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <input
