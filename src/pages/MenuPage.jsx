@@ -185,7 +185,7 @@ export default function MenuPage() {
 
   return (
     <div className="space-y-6 relative  ">
-      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed  shadow px-3 bg-background/40  w-full h-14 md:rounded-b-2xl mx-auto   md:top-0 backdrop-blur-2xl">
+      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed  shadow px-3 bg-background/40 border-b border-x border-secondary w-full h-14 md:rounded-b-2xl mx-auto   md:top-0 backdrop-blur-2xl">
         <FaSearchengin className="w-auto h-6"></FaSearchengin>
         <input
           type="text"
@@ -211,10 +211,10 @@ export default function MenuPage() {
                 to="/omakase"
                 className="bg-black md:w-full  inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-2xl border border-secondary/40 hover:scale-105 transition-transform text-contrast justify-center text-base-fg font-semibold"
               >
-                <div className="bg-clip-text bg-gradient-to-br  from-yellow-400 to-yellow-50 flex items-center gap-2">
+                <button className="bg-clip-text bg-gradient-to-br  from-yellow-300 to-yellow-50 flex items-center gap-2">
                   <span className=" text-transparent">Omakase</span>
                   <FaArrowRight className="text-white"></FaArrowRight>
-                </div>
+                </button>
                 <span
                   className="i-heroicons-arrow-right-20-solid"
                   aria-hidden

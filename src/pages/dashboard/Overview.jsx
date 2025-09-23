@@ -89,7 +89,7 @@ export default function DashboardOverview() {
           <span className="ml-2 text-sm text-muted">{todayLabel}</span>
         </h2>
         <Link
-          to="/dashboard/reviews"
+          to="/dashboard/statistics"
           className="text-sm text-primary underline"
         >
           View stats

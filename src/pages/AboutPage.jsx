@@ -124,7 +124,7 @@ export default function AboutPage() {
               <li className="flex items-center justify-between gap-2 w-full ">
                 <a
                   target="_blank"
-                  className="bg-primary text-base-fg p-2 rounded-2xl flex-1"
+                  className="bg-primary text-base-fg px-5 py-2 rounded-2xl flex-1"
                   href={`tel:${settings.phone_number.replace(/[^\d+]/g, "")}`}
                   rel="noopener noreferrer"
                   onClick={() =>
