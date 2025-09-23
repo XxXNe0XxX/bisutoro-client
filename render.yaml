@@ -7,7 +7,8 @@ services:
     branch: main
 
     # Build and publish settings for Vite
-    buildCommand: npm ci && npm run build
+  # Install devDependencies too so Vite is available in the build step
+  buildCommand: npm ci --include=dev && npm run build
     staticPublishPath: dist
 
     # SPA rewrite so client-side routing works on refresh/direct links
