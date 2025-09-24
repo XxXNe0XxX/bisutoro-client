@@ -20,6 +20,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
     is_available: true,
     vegan: false,
     gluten_free: false,
+    pieces_per_order: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
@@ -50,6 +51,11 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
     if (desc.length > DESC_MAX) errs.description = `Max ${DESC_MAX} characters`;
     if (!Array.isArray(form.ingredients) || form.ingredients.length < 1)
       errs.ingredients = "Add at least one ingredient";
+    if (String(form.pieces_per_order || "").trim()) {
+      const n = Number(form.pieces_per_order);
+      if (!Number.isInteger(n) || n <= 0)
+        errs.pieces_per_order = "Must be a positive integer";
+    }
     return errs;
   }, [form]);
 
@@ -69,6 +75,12 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
       is_available: !!form.is_available,
       vegan: !!form.vegan,
       gluten_free: !!form.gluten_free,
+      pieces_per_order: (() => {
+        const raw = String(form.pieces_per_order || "").trim();
+        if (!raw) return undefined;
+        const n = Number(raw);
+        return Number.isInteger(n) && n > 0 ? n : undefined;
+      })(),
     };
     onCreate(payload, () =>
       setForm({
@@ -80,6 +92,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
         is_available: true,
         vegan: false,
         gluten_free: false,
+        pieces_per_order: "",
       })
     );
   }
@@ -177,6 +190,30 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
             />
             {submitted && errors.price && (
               <div className="text-danger text-xs mt-1">{errors.price}</div>
+            )}
+          </div>
+
+          <div className="md:col-span-1">
+            <label className="text-sm text-muted">Pieces per order</label>
+            <input
+              type="number"
+              min={1}
+              step={1}
+              value={form.pieces_per_order}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, pieces_per_order: e.target.value }))
+              }
+              placeholder="e.g. 6"
+              className={`w-full rounded-2xl p-1 px-2 border bg-background text-base-fg ${
+                submitted && errors.pieces_per_order
+                  ? "border-danger"
+                  : "border-secondary/40"
+              }`}
+            />
+            {submitted && errors.pieces_per_order && (
+              <div className="text-danger text-xs mt-1">
+                {errors.pieces_per_order}
+              </div>
             )}
           </div>
 

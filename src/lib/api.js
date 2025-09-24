@@ -198,6 +198,7 @@ export const ServerMenuItemShape = {
   ingredients: "array|string|undefined",
   vegan: "boolean|number|undefined",
   gluten_free: "boolean|number|undefined",
+  pieces_per_order: "number|undefined",
   created_at: "string",
   updated_at: "string",
 };
@@ -221,6 +222,7 @@ export function normalizeMenu(items) {
       // pass through dietary flags if present on server
       vegan: it.vegan === true || it.vegan === 1,
       gluten_free: it.gluten_free === true || it.gluten_free === 1,
+      pieces_per_order: toPositiveInt(it.pieces_per_order),
       reviews: it.reviews || null,
     };
     if (!grouped.has(cat)) grouped.set(cat, []);
@@ -253,6 +255,13 @@ function normalizeIngredients(ing) {
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean);
+}
+
+function toPositiveInt(val) {
+  const n = Number(val);
+  if (!Number.isFinite(n)) return undefined;
+  const i = Math.trunc(n);
+  return i > 0 ? i : undefined;
 }
 
 // ---- Public tracking ----

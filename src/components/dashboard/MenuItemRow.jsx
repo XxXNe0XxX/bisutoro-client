@@ -29,6 +29,11 @@ export default function MenuItemRow({
       item.gluten_free === true ||
       item.gluten_free === 1 ||
       String(item.gluten_free) === "1",
+    pieces_per_order:
+      Number.isInteger(Number(item.pieces_per_order)) &&
+      Number(item.pieces_per_order) > 0
+        ? String(item.pieces_per_order)
+        : "",
   }));
 
   const errors = useMemo(() => {
@@ -60,6 +65,12 @@ export default function MenuItemRow({
       is_available: !!edit.is_available,
       vegan: !!edit.vegan,
       gluten_free: !!edit.gluten_free,
+      pieces_per_order: (() => {
+        const raw = String(edit.pieces_per_order || "").trim();
+        if (!raw) return undefined;
+        const n = Number(raw);
+        return Number.isInteger(n) && n > 0 ? n : undefined;
+      })(),
     };
     onSave(item.id, payload);
     setEditing(false);
@@ -132,6 +143,28 @@ export default function MenuItemRow({
           </div>
         ) : (
           <span>{toCurrency(item.price)}</span>
+        )}
+      </td>
+      <td className="p-3 align-top whitespace-nowrap">
+        {editing ? (
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={edit.pieces_per_order}
+            onChange={(e) =>
+              setEdit((r) => ({ ...r, pieces_per_order: e.target.value }))
+            }
+            className="w-24 rounded-2xl px-2 border border-secondary/40 bg-background text-base-fg"
+            placeholder="e.g. 6"
+          />
+        ) : (
+          <span className="text-muted">
+            {Number.isInteger(Number(item.pieces_per_order)) &&
+            Number(item.pieces_per_order) > 0
+              ? `${item.pieces_per_order} pcs`
+              : "—"}
+          </span>
         )}
       </td>
       <td className="p-3 align-top">

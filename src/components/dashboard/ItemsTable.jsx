@@ -19,6 +19,7 @@ export default function ItemsTable({
             <th className="text-left p-3">Name</th>
             <th className="text-left p-3">Category</th>
             <th className="text-left p-3">Price</th>
+            <th className="text-left p-3">Pieces/order</th>
             <th className="text-left p-3">Available</th>
             <th className="text-left p-3">Vegan</th>
             <th className="text-left p-3">Gluten-free</th>
@@ -39,7 +40,7 @@ export default function ItemsTable({
           ))}
           {!items.length && (
             <tr>
-              <td colSpan={8} className="p-6 text-center text-muted">
+              <td colSpan={9} className="p-6 text-center text-muted">
                 No items found
               </td>
             </tr>

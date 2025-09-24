@@ -136,7 +136,16 @@ export default function ItemPage() {
                 )}
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold">${item.price}</div>
+              <span className="font-semibold text-2xl tabular-nums flex flex-row-reverse items-center gap-2">
+                ${item.price}
+                {Number.isFinite(Number(item.pieces_per_order)) &&
+                  Number(item.pieces_per_order) > 0 && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-2xl bg-secondary/30 text-base-fg whitespace-nowrap">
+                      {Number(item.pieces_per_order)}{" "}
+                      {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                    </span>
+                  )}
+              </span>
               <div className="text-sm text-muted">{item.category}</div>
             </div>
           </div>
@@ -157,7 +166,7 @@ export default function ItemPage() {
             <div>
               <button
                 onClick={() => setReviewOpen(true)}
-                className="px-4 py-2 rounded bg-primary text-contrast"
+                className="px-4 py-2 rounded bg-primary text-contrast font-semibold"
               >
                 Leave a review
               </button>

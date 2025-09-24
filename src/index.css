@@ -24,15 +24,15 @@
 }
 @layer base {
   .dark {
-    --color-primary: #8e89f5;
-    --color-secondary: #9c97c9;
+    --color-primary: #3e8def;
+    --color-secondary: #97b3c9;
     --color-background: #0e0d1a;
     --color-info: #0369a1;
     --color-success: #157f3c;
     --color-warning: #fabd23;
     --color-danger: #ee4343;
-    --primary: #8e89f5;
-    --secondary: #9c97c9;
+    --primary: #3e8def;
+    --secondary: #97b3c9;
     --background: #0e0d1a;
     --text: #ffffff;
     --muted: #b3b3b3;

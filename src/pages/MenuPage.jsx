@@ -347,13 +347,13 @@ export default function MenuPage() {
             </div>
             <li className=" max-w-prose text-base-fg">
               -- Gluten free dishes are marked with{" "}
-              <span className=" bg-warning p-1 rounded-2xl text-xs text-contrast font-semibold">
+              <span className=" bg-warning p-1 rounded-2xl text-xs text-base-fg font-semibold">
                 GF
               </span>
             </li>
             <li className=" max-w-prose text-base-fg">
               -- Veggie options marked with{" "}
-              <span className=" bg-success p-1 rounded-2xl text-xs text-contrast font-semibold">
+              <span className=" bg-success p-1 rounded-2xl text-xs text-base-fg font-semibold">
                 VG
               </span>
             </li>
@@ -401,7 +401,7 @@ export default function MenuPage() {
                     type="button"
                     aria-pressed={filterVegan}
                     onClick={() => setFilterVegan((v) => !v)}
-                    className={`px-2 font-semibold border border-primary/40 rounded-2xl bg-success text-contrast text-xs transition-shadow ${
+                    className={`px-2 font-semibold border border-primary/40 rounded-2xl bg-success text-base-fg py-1 text-xs transition-shadow ${
                       filterVegan ? "ring-3  ring-primary " : ""
                     }`}
                     title="Filter vegetarian options"
@@ -412,7 +412,7 @@ export default function MenuPage() {
                     type="button"
                     aria-pressed={filterGF}
                     onClick={() => setFilterGF((v) => !v)}
-                    className={`px-2 font-semibold border border-primary/40 rounded-2xl bg-warning text-contrast text-xs transition-shadow ${
+                    className={`px-2 font-semibold border border-primary/40 rounded-2xl bg-warning text-base-fg py-1 text-xs transition-shadow ${
                       filterGF ? "ring-3  ring-primary " : ""
                     }`}
                     title="Filter gluten-free options"
@@ -504,39 +504,49 @@ export default function MenuPage() {
                               <div className="text-xs font-semibold text-primary mb-1">
                                 Special
                               </div>
-                              <p className="font-medium group-hover:underline truncate">
-                                {item.name}
-                              </p>
+                              <div className="font-medium group-hover:underline truncate flex items-center gap-2">
+                                <span>{item.name}</span>
+
+                                {(item.vegan === true ||
+                                  item.vegan === 1 ||
+                                  String(item.vegan) === "1" ||
+                                  item.gluten_free === true ||
+                                  item.gluten_free === 1 ||
+                                  String(item.gluten_free) === "1") && (
+                                  <p className="flex gap-2 text-[10px]">
+                                    {(item.vegan === true ||
+                                      item.vegan === 1 ||
+                                      String(item.vegan) === "1") && (
+                                      <span className="px-1.5 py-0.5  rounded-2xl bg-success text-base-fg">
+                                        VG
+                                      </span>
+                                    )}
+                                    {(item.gluten_free === true ||
+                                      item.gluten_free === 1 ||
+                                      String(item.gluten_free) === "1") && (
+                                      <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-base-fg">
+                                        GF
+                                      </span>
+                                    )}
+                                  </p>
+                                )}
+                              </div>
                               <p className="text-xs text-muted truncate">
                                 {item.description}
                               </p>
-                              {(item.vegan === true ||
-                                item.vegan === 1 ||
-                                String(item.vegan) === "1" ||
-                                item.gluten_free === true ||
-                                item.gluten_free === 1 ||
-                                String(item.gluten_free) === "1") && (
-                                <div className="mt-1 flex gap-2 text-[10px]">
-                                  {(item.vegan === true ||
-                                    item.vegan === 1 ||
-                                    String(item.vegan) === "1") && (
-                                    <span className="px-1.5 p-1 rounded-2xl bg-success text-base-fg">
-                                      VG
-                                    </span>
-                                  )}
-                                  {(item.gluten_free === true ||
-                                    item.gluten_free === 1 ||
-                                    String(item.gluten_free) === "1") && (
-                                    <span className="px-1.5 p-1 rounded-2xl bg-warning text-base-fg">
-                                      GF
-                                    </span>
-                                  )}
-                                </div>
-                              )}
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <span className="font-semibold tabular-nums block">
+                              <span className="font-semibold tabular-nums flex flex-row-reverse items-center gap-2">
                                 ${item.price}
+                                {Number.isFinite(
+                                  Number(item.pieces_per_order)
+                                ) &&
+                                  Number(item.pieces_per_order) > 0 && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-2xl bg-secondary/30 text-base-fg whitespace-nowrap">
+                                      {Number(item.pieces_per_order)}{" "}
+                                      {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                                    </span>
+                                  )}
                               </span>
                             </div>
                           </div>
@@ -574,32 +584,35 @@ export default function MenuPage() {
                     >
                       <Link to={`/menu/${item.id}`} className="group flex-1">
                         <div className="flex gap-2 items-center font-medium  ">
-                          <span className="group-active:underline group-hover:underline">
-                            {item.name}
+                          <span className=" flex items-center gap-2">
+                            <span className="group-active:underline group-hover:underline">
+                              {item.name}
+                            </span>
+
+                            {(item.vegan === true ||
+                              item.vegan === 1 ||
+                              String(item.vegan) === "1" ||
+                              item.gluten_free === true ||
+                              item.gluten_free === 1 ||
+                              String(item.gluten_free) === "1") && (
+                              <div className=" flex gap-2 text-[10px]">
+                                {(item.vegan === true ||
+                                  item.vegan === 1 ||
+                                  String(item.vegan) === "1") && (
+                                  <span className="px-1.5 py-0.5 rounded-2xl bg-success text-base-fg">
+                                    VG
+                                  </span>
+                                )}
+                                {(item.gluten_free === true ||
+                                  item.gluten_free === 1 ||
+                                  String(item.gluten_free) === "1") && (
+                                  <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-base-fg">
+                                    GF
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </span>
-                          {(item.vegan === true ||
-                            item.vegan === 1 ||
-                            String(item.vegan) === "1" ||
-                            item.gluten_free === true ||
-                            item.gluten_free === 1 ||
-                            String(item.gluten_free) === "1") && (
-                            <div className="mt-1 flex gap-2 text-[10px]">
-                              {(item.vegan === true ||
-                                item.vegan === 1 ||
-                                String(item.vegan) === "1") && (
-                                <span className="px-1.5 py-0.5 rounded-2xl bg-success text-contrast">
-                                  VG
-                                </span>
-                              )}
-                              {(item.gluten_free === true ||
-                                item.gluten_free === 1 ||
-                                String(item.gluten_free) === "1") && (
-                                <span className="px-1.5 py-0.5 rounded-2xl bg-warning text-contrast">
-                                  GF
-                                </span>
-                              )}
-                            </div>
-                          )}
                         </div>
 
                         <p className="text-xs text-muted">{item.description}</p>
@@ -613,8 +626,15 @@ export default function MenuPage() {
                           )}
                       </Link>
                       <div className="text-right">
-                        <span className="font-semibold tabular-nums block">
+                        <span className="font-semibold tabular-nums flex flex-row-reverse items-center gap-2">
                           ${item.price}
+                          {Number.isFinite(Number(item.pieces_per_order)) &&
+                            Number(item.pieces_per_order) > 0 && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-2xl bg-secondary/30 text-base-fg whitespace-nowrap">
+                                {Number(item.pieces_per_order)}{" "}
+                                {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                              </span>
+                            )}
                         </span>
                         {item.reviews?.avg_rating != null &&
                           publicSettings.data?.show_average_rating_on_items ===

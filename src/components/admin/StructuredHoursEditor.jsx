@@ -116,13 +116,13 @@ export default function StructuredHoursEditor({ value, onChange }) {
     onChange(next);
   }
   return (
-    <div className=" space-y-3 overflow-x-auto">
+    <div className=" space-y-3 overflow-x-auto w-full ">
       {days.map(([key, label]) => (
         <div>
           <h1 className="font-medium pb-2">{label}</h1>
-          <div key={key} className=" flex gap-3 ">
+          <div key={key} className=" flex justify-between gap-3 ">
             <div className=" flex flex-col gap-2">
-              <div className="flex  items-center gap-3">
+              <div className="flex items-center gap-3">
                 <p className="text-muted text-xs block">
                   <FaRegSun className="h-4 w-auto" />
                 </p>
@@ -147,7 +147,7 @@ export default function StructuredHoursEditor({ value, onChange }) {
               <button
                 type="button"
                 onClick={() => setClosed(key)}
-                className="px-3 py-2 rounded-2xl border border-secondary/40 text-sm bg-danger text-contrast"
+                className="px-3 hover:opacity-75 transition-opacity py-2 rounded-2xl border border-secondary/40 text-sm bg-danger text-contrast"
                 title="Set closed all day"
               >
                 Closed all day
@@ -155,7 +155,7 @@ export default function StructuredHoursEditor({ value, onChange }) {
               <button
                 type="button"
                 onClick={() => clearDay(key)}
-                className="px-3 py-2 rounded-2xl border border-secondary/40 text-sm"
+                className="px-3 hover:opacity-75 transition-opacity py-2 rounded-2xl border border-secondary/40 text-sm"
                 title="Clear day"
               >
                 Clear day

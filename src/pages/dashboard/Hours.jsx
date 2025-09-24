@@ -112,7 +112,7 @@ export default function DashboardHours() {
           {settingsQ.error?.message || "Failed to load"}
         </div>
       ) : (
-        <div className="rounded-2xl shadow-inner shadow-black/30 border border-secondary/40 bg-surface p-4 space-y-4 max-w-3xl">
+        <div className="rounded-2xl shadow-inner shadow-black/30 border border-secondary/40 bg-surface p-4 space-y-4">
           <StructuredHoursEditor
             value={hours}
             onChange={(v) => {

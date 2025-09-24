@@ -87,14 +87,17 @@ export default function OmakasePage() {
           regular menu instead — you can always add an Omakase experience next
           time.
         </Motion.p>
-        <Motion.div variants={item} className="flex gap-2 pt-2 items-center">
+        <Motion.div
+          variants={item}
+          className="flex flex-wrap gap-4 pt-2 items-center"
+        >
           <Motion.div
             whileHover={{ y: -1, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Link
               to="/menu"
-              className="p-3 font-semibold text-center rounded-2xl bg-primary text-contrast "
+              className="p-3 font-semibold text-nowrap text-center rounded-2xl bg-primary text-contrast "
             >
               View the Menu
             </Link>

@@ -120,18 +120,22 @@ export default function Navbar({ items }) {
         </div>
         <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-56px-56px)]">
           {navItems.map((item) => (
-            <NavLink
+            <div
               key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `block px-3 py-2 rounded-2xl transition-colors border border-transparent hover:border-secondary/40 ${
-                  isActive ? "bg-primary text-contrast" : "text-base-fg"
-                }`
-              }
-              end={item.end}
+              className="border-[2px] transition-colors hover:border-secondary/40 overflow-hidden border-background rounded-2xl "
             >
-              {item.label}
-            </NavLink>
+              <NavLink
+                to={item.to}
+                className={({ isActive }) =>
+                  `block px-3 py-2  transition-colors mask-r-from-0% border border-transparent  ${
+                    isActive ? "bg-primary text-contrast" : "text-base-fg"
+                  }`
+                }
+                end={item.end}
+              >
+                {item.label}
+              </NavLink>
+            </div>
           ))}
         </nav>
         <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-secondary/40 flex flex-col gap-2">
