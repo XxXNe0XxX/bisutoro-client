@@ -272,11 +272,15 @@ export default function MenuPage() {
             </div>
             <li className=" max-w-prose text-base-fg">
               -- Gluten free dishes are marked with{" "}
-              <span className=" bg-warning p-1 rounded-2xl text-xs">GF</span>
+              <span className=" bg-warning p-1 rounded-2xl text-xs text-contrast font-semibold">
+                GF
+              </span>
             </li>
             <li className=" max-w-prose text-base-fg">
               -- Veggie options marked with{" "}
-              <span className=" bg-success p-1 rounded-2xl text-xs">VG</span>
+              <span className=" bg-success p-1 rounded-2xl text-xs text-contrast font-semibold">
+                VG
+              </span>
             </li>
           </ul>
         </header>
@@ -305,7 +309,7 @@ export default function MenuPage() {
       {!isLoading && !isError && (
         <>
           {categoryButtons.length > 0 && (
-            <div className="px-3 flex items-center gap-2">
+            <div className="px-3 flex flex-col items-start gap-2">
               <h1 className="text-primary text-lg font-semibold text-nowrap">
                 Filter by:{" "}
               </h1>
@@ -315,7 +319,7 @@ export default function MenuPage() {
                     type="button"
                     aria-pressed={filterVegan}
                     onClick={() => setFilterVegan((v) => !v)}
-                    className={`px-2 py-1 border border-primary/40 rounded-2xl bg-success text-base-fg text-xs transition-shadow ${
+                    className={`px-2 font-semibold border border-primary/40 rounded-2xl bg-success text-contrast text-xs transition-shadow ${
                       filterVegan ? "ring-3  ring-primary " : ""
                     }`}
                     title="Filter vegetarian options"
@@ -326,7 +330,7 @@ export default function MenuPage() {
                     type="button"
                     aria-pressed={filterGF}
                     onClick={() => setFilterGF((v) => !v)}
-                    className={`px-2 py-1 border border-primary/40 rounded-2xl bg-warning text-base-fg text-xs transition-shadow ${
+                    className={`px-2 font-semibold border border-primary/40 rounded-2xl bg-warning text-contrast text-xs transition-shadow ${
                       filterGF ? "ring-3  ring-primary " : ""
                     }`}
                     title="Filter gluten-free options"
@@ -400,7 +404,7 @@ export default function MenuPage() {
                         className="group rounded-2xl border-2 border-primary/60 bg-primary/5 p-3 hover:bg-primary/10 transition-colors"
                       >
                         <Link to={`/menu/${item.id}`} className="block">
-                          <div className="flex justify-between gap-4">
+                          <div className="flex justify-between gap-4 ">
                             <div className="min-w-0">
                               <div className="text-xs font-semibold text-primary mb-1">
                                 Special

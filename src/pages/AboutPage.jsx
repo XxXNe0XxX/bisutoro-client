@@ -17,6 +17,7 @@ import {
 import ReservationButton from "../components/ui/ReservationButton";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicAppSettings, trackPhoneAction, trackEmailAction } from "../lib/api";
+import { motion } from "motion/react";
 
 export default function AboutPage() {
   const settingsQ = useQuery({
@@ -29,62 +30,85 @@ export default function AboutPage() {
     `${OUT_BASE}?url=${encodeURIComponent(url)}$${
       name ? `&name=${encodeURIComponent(name)}` : ""
     }`.replace("$&", "&");
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+    },
+  };
+  const item = {
+    hidden: { opacity: 0, y: 12 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+  };
+
   return (
-    <div className="space-y-6 p-3 ">
-      <h1 className="text-3xl font-bold text-primary">About Us</h1>
-      <p className="text-muted leading-relaxed">
-        Bisutoro is a modern bistro inspired by the harmony of Japanese and
-        contemporary cuisine. Our menu evolves with the seasons, featuring
-        locally sourced ingredients and thoughtfully crafted flavors.
-      </p>
-      <p className="text-muted leading-relaxed">
-        Founded with a passion for hospitality, we aim to create a warm,
-        intimate dining experience. Whether you\'re here for a comforting bowl
-        of ramen or an adventurous tasting flight, we strive to delight every
-        guest.
-      </p>
-      <ReservationButton></ReservationButton>
-      <div className=" gap-4 text-sm grid md:grid-cols-2  justify-between ">
+    <motion.div className="space-y-6 p-3" initial="hidden" animate="show" variants={container}>
+      <motion.h1 variants={item} className="text-3xl font-bold text-primary">
+        About Us
+      </motion.h1>
+      <motion.p variants={item} className="text-muted leading-relaxed">
+        Bisutoro is a modern bistro inspired by the harmony of Japanese and contemporary cuisine.
+        Our menu evolves with the seasons, featuring locally sourced ingredients and thoughtfully
+        crafted flavors.
+      </motion.p>
+      <motion.p variants={item} className="text-muted leading-relaxed">
+        Founded with a passion for hospitality, we aim to create a warm, intimate dining
+        experience. Whether you're here for a comforting bowl of ramen or an adventurous tasting
+        flight, we strive to delight every guest.
+      </motion.p>
+
+      <motion.div variants={item}>
+        <ReservationButton />
+      </motion.div>
+
+      <motion.div variants={item} className="gap-4 text-sm grid md:grid-cols-2 justify-between">
         <div>
-          <h2 className="font-semibold mb-1 text-muted text-lg">Hours</h2>
+          <motion.h2 variants={item} className="font-semibold mb-1 text-muted text-lg">
+            Hours
+          </motion.h2>
           {settings.hours_of_operation_structured ? (
-            <StructuredHoursDisplay
-              hours={settings.hours_of_operation_structured}
-            />
+            <motion.div variants={item}>
+              <StructuredHoursDisplay hours={settings.hours_of_operation_structured} />
+            </motion.div>
           ) : settings.hours_of_operation ? (
-            <pre className="whitespace-pre-wrap text-neutral-600 dark:text-neutral-400">
+            <motion.pre
+              variants={item}
+              className="whitespace-pre-wrap text-neutral-600 dark:text-neutral-400"
+            >
               {settings.hours_of_operation}
-            </pre>
+            </motion.pre>
           ) : (
             <ul className="*:flex *:gap-2 *:items-center space-y-0.5 text-neutral-600 text-nowrap dark:text-neutral-400">
-              <li>
-                <FaClock className="text-primary" />
-                Wed: 5:00pm – 9:30pm
-              </li>
-              <li>
-                <FaClock className="text-primary" />
-                Thu: 5:00pm – 9:30pm
-              </li>
-              <li>
-                <FaClock className="text-primary" />
-                Fri: 12:00am – 3:00pm / 5:00pm - 10:00pm
-              </li>
-              <li>
-                <FaClock className="text-primary" />
-                Sat: 12:00am – 3:00pm / 5:00pm - 10:00pm
-              </li>
-              <li>
-                <FaClock className="text-primary" />
-                Sun: 5:00pm – 9:00pm
-              </li>
+              <motion.li variants={item}>
+                <FaClock className="text-primary" /> Wed: 5:00pm – 9:30pm
+              </motion.li>
+              <motion.li variants={item}>
+                <FaClock className="text-primary" /> Thu: 5:00pm – 9:30pm
+              </motion.li>
+              <motion.li variants={item}>
+                <FaClock className="text-primary" /> Fri: 12:00am – 3:00pm / 5:00pm - 10:00pm
+              </motion.li>
+              <motion.li variants={item}>
+                <FaClock className="text-primary" /> Sat: 12:00am – 3:00pm / 5:00pm - 10:00pm
+              </motion.li>
+              <motion.li variants={item}>
+                <FaClock className="text-primary" /> Sun: 5:00pm – 9:00pm
+              </motion.li>
             </ul>
           )}
         </div>
+
         <div>
-          <h2 className="font-semibold mb-1 text-muted text-lg">Contact</h2>
+          <motion.h2 variants={item} className="font-semibold mb-1 text-muted text-lg">
+            Contact
+          </motion.h2>
           <ul className="space-y-2 *:flex *:items-center *:gap-2 text-neutral-600 dark:text-neutral-400 ">
             {settings.location && (
-              <a
+              <motion.a
+                whileHover={{ y: -1, scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 target="_blank"
                 className="bg-primary text-base-fg p-2 rounded-2xl"
                 href={outHref(
@@ -102,10 +126,13 @@ export default function AboutPage() {
                   </div>
                   <FaArrowRightFromBracket className="text-contrast" />
                 </li>
-              </a>
+              </motion.a>
             )}
+
             {settings.contact_email && (
-              <a
+              <motion.a
+                whileHover={{ y: -1, scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 target="_blank"
                 className="bg-primary text-base-fg p-2 rounded-2xl"
                 href={`mailto:${settings.contact_email}`}
@@ -124,11 +151,14 @@ export default function AboutPage() {
                   </div>
                   <FaArrowRightFromBracket className="text-contrast" />
                 </li>
-              </a>
+              </motion.a>
             )}
+
             {settings.phone_number && (
               <li className="flex items-center justify-between gap-2 w-full ">
-                <a
+                <motion.a
+                  whileHover={{ y: -1, scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   target="_blank"
                   className="bg-primary text-base-fg px-5 py-2 rounded-2xl flex-1"
                   href={`tel:${settings.phone_number.replace(/[^\d+]/g, "")}`}
@@ -147,18 +177,13 @@ export default function AboutPage() {
                     </div>
                     <FaArrowRightFromBracket className="text-contrast" />
                   </div>
-                </a>
+                </motion.a>
                 <button
                   className="ml-2 px-3 py-2 rounded-2xl border border-secondary/40 hover:bg-secondary/10 text-sm"
                   onClick={async () => {
                     try {
-                      await navigator.clipboard.writeText(
-                        settings.phone_number
-                      );
-                      await trackPhoneAction({
-                        phone: settings.phone_number,
-                        action: "copy",
-                      });
+                      await navigator.clipboard.writeText(settings.phone_number);
+                      await trackPhoneAction({ phone: settings.phone_number, action: "copy" });
                     } catch {
                       // ignore
                     }
@@ -170,20 +195,19 @@ export default function AboutPage() {
               </li>
             )}
           </ul>
+
           {settings.social_links && (
-            <div className="mt-3">
-              <h3 className="font-semibold text-muted text-lg mb-1">
-                Follow us
-              </h3>
+            <motion.div variants={item} className="mt-3">
+              <h3 className="font-semibold text-muted text-lg mb-1">Follow us</h3>
               <ul className="flex flex-wrap gap-2">
                 {(Array.isArray(settings.social_links)
                   ? settings.social_links
-                  : Object.entries(settings.social_links).map(
-                      ([name, url]) => ({ name, url })
-                    )
+                  : Object.entries(settings.social_links).map(([name, url]) => ({ name, url }))
                 ).map((s, i) => (
                   <li key={i}>
-                    <a
+                    <motion.a
+                      whileHover={{ y: -1, scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-secondary/40 bg-secondary/10 hover:bg-secondary/20 transition-colors"
                       href={outHref(s.url, s.name)}
                       target="_blank"
@@ -191,15 +215,15 @@ export default function AboutPage() {
                     >
                       <SocialIcon name={s.name} url={s.url} />
                       <span className="text-sm text-base-fg">{s.name}</span>
-                    </a>
+                    </motion.a>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
