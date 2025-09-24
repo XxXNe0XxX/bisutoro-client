@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FaSearchengin } from "react-icons/fa6";
 import { ClipLoader } from "react-spinners";
 import {
@@ -11,6 +11,71 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa6";
 import ReservationButton from "../components/ui/ReservationButton";
+import { motion as Motion } from "motion/react";
+import { animate, inView } from "motion";
+
+// Reusable in-view reveal wrapper for scroll-based enter/exit animations
+function InViewReveal({
+  as = "li",
+  className,
+  children,
+  y = 20,
+  delay = 0,
+  threshold = 0.25,
+  once = false,
+  ...rest
+}) {
+  const ref = useRef(null);
+  const Tag = as;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Respect reduced motion preferences
+    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (mql?.matches) {
+      el.style.opacity = 1;
+      el.style.transform = "none";
+      return;
+    }
+
+    // Set initial state for enter animation
+    el.style.opacity = 0;
+    el.style.transform = `translateY(${y}px)`;
+
+    const stop = inView(
+      el,
+      () => {
+        // Enter
+        animate(
+          el,
+          {
+            opacity: [0, 1],
+            transform: [`translateY(${y}px)`, "translateY(0px)"],
+          },
+          { duration: 0.5, delay, easing: "ease-out" }
+        );
+        // Return a callback for when it leaves the viewport
+        return () => {
+          animate(
+            el,
+            { opacity: 0, transform: `translateY(${Math.max(0, y * 0.3)}px)` },
+            { duration: 0.35, easing: "ease-in" }
+          );
+        };
+      },
+      { amount: threshold, once }
+    );
+    return () => stop?.();
+  }, [y, delay, threshold, once]);
+
+  return (
+    <Tag ref={ref} className={className} {...rest}>
+      {children}
+    </Tag>
+  );
+}
 
 export default function MenuPage() {
   const [categories, setCategories] = useState([]);
@@ -212,7 +277,12 @@ export default function MenuPage() {
 
   return (
     <div className="space-y-6 relative  ">
-      <div className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl">
+      <Motion.div
+        initial={{ y: -12, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-10"
+      >
         <FaSearchengin className="w-auto h-6" />
         <div className="relative w-full">
           <input
@@ -241,9 +311,14 @@ export default function MenuPage() {
             )}
           </div>
         </div>
-      </div>
+      </Motion.div>
       {!query.trim() && (
-        <header className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  ">
+        <Motion.header
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.05 }}
+          className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  "
+        >
           <div className="w-full">
             <h1 className="text-3xl text-primary font-bold mb-2 ">Menu</h1>
             <p className="text-muted max-w-prose">
@@ -283,7 +358,7 @@ export default function MenuPage() {
               </span>
             </li>
           </ul>
-        </header>
+        </Motion.header>
       )}
       {isLoading && (
         <div className="space-y-4">
@@ -309,7 +384,12 @@ export default function MenuPage() {
       {!isLoading && !isError && (
         <>
           {categoryButtons.length > 0 && (
-            <div className="px-3 flex flex-col items-start gap-2">
+            <Motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: "easeOut", delay: 0.06 }}
+              className="px-3 flex flex-col items-start gap-2"
+            >
               <h1 className="text-primary text-lg font-semibold text-nowrap">
                 Filter by:{" "}
               </h1>
@@ -380,15 +460,27 @@ export default function MenuPage() {
                   </button>
                 )}
               </div>
-            </div>
+            </Motion.div>
           )}
           <div className="grid gap-8 md:grid-cols-2 grid-cols-1 px-3 ">
             {/* Today's Specials (hidden when non-dietary filters are active or disabled by settings) */}
             {!!specials.length &&
               !nonDietaryFilterActive &&
               publicSettings.data?.show_today_specials !== false && (
-                <section className="md:col-span-2  space-y-4 text-base-fg">
-                  <h2 className=" text-xl tracking-wider bg-primary text-contrast px-1 w-full rounded-ee-2xl uppercase font-bold inline-flex items-center">
+                <Motion.section
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ amount: 0.2, once: false }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="md:col-span-2  space-y-4 text-base-fg"
+                >
+                  <Motion.h2
+                    initial={{ opacity: 0, y: 6 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ amount: 0.6, once: true }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className=" text-xl tracking-wider bg-primary text-contrast px-1 w-full rounded-ee-2xl uppercase font-bold inline-flex items-center"
+                  >
                     <span className="inline-flex items-center gap-2">
                       <span
                         className="i-heroicons-sparkles-20-solid"
@@ -396,10 +488,11 @@ export default function MenuPage() {
                       />
                       Today's Specials
                     </span>
-                  </h2>
+                  </Motion.h2>
                   <ul className="grid sm:grid-cols-2 grid-cols-1 gap-3">
                     {specials.map((item) => (
-                      <li
+                      <InViewReveal
+                        as="li"
                         key={item.id}
                         className="group rounded-2xl border-2 border-primary/60 bg-primary/5 p-3 hover:bg-primary/10 transition-colors"
                       >
@@ -446,20 +539,34 @@ export default function MenuPage() {
                             </div>
                           </div>
                         </Link>
-                      </li>
+                      </InViewReveal>
                     ))}
                   </ul>
-                </section>
+                </Motion.section>
               )}
 
             {filteredCategories.map((cat) => (
-              <section key={cat.name} className=" space-y-4 text-base-fg">
-                <h2 className="text-xl tracking-wider  border-b  bg-text text-contrast px-3 rounded-ee-2xl uppercase font-bold  ">
+              <Motion.section
+                key={cat.name}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ amount: 0.2, once: false }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                className=" space-y-4 text-base-fg"
+              >
+                <Motion.h2
+                  initial={{ opacity: 0, y: 6 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ amount: 0.6, once: true }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="text-xl tracking-wider  border-b  bg-text text-contrast px-3 rounded-ee-2xl uppercase font-bold  "
+                >
                   {cat.name}
-                </h2>
+                </Motion.h2>
                 <ul className="space-y-3 ">
                   {(cat.items || []).map((item) => (
-                    <li
+                    <InViewReveal
+                      as="li"
                       key={item.id ?? item.name}
                       className="flex justify-between gap-4"
                     >
@@ -516,10 +623,10 @@ export default function MenuPage() {
                             </span>
                           )}
                       </div>
-                    </li>
+                    </InViewReveal>
                   ))}
                 </ul>
-              </section>
+              </Motion.section>
             ))}
           </div>
         </>

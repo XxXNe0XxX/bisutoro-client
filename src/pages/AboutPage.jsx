@@ -1,3 +1,4 @@
+import { motion as Motion } from "motion/react";
 import {
   FaCopy,
   FaPhone,
@@ -21,7 +22,6 @@ import {
   trackPhoneAction,
   trackEmailAction,
 } from "../lib/api";
-import { motion } from "motion/react";
 
 export default function AboutPage() {
   const settingsQ = useQuery({
@@ -48,88 +48,101 @@ export default function AboutPage() {
   };
 
   return (
-    <motion.div
+    <Motion.div
       className="space-y-6 p-3"
       initial="hidden"
       animate="show"
       variants={container}
     >
-      <motion.h1 variants={item} className="text-3xl font-bold text-primary">
+      <Motion.div
+        initial="hidden"
+        animate="show"
+        variants={item}
+        className="rounded-2xl border border-background overflow-hidden"
+      >
+        <img
+          height={100}
+          width={100}
+          className=" w-full object-cover mask-b-from-0 max-h-64 "
+          src="https://ik.imagekit.io/quolb5yjy/Restaurant%20Sign?updatedAt=1758685215874"
+        ></img>
+      </Motion.div>
+      <Motion.h1 variants={item} className="text-3xl font-bold text-primary">
         About Us
-      </motion.h1>
-      <motion.p variants={item} className="text-muted leading-relaxed">
+      </Motion.h1>
+      <Motion.p variants={item} className="text-muted leading-relaxed">
         Bisutoro is a modern bistro inspired by the harmony of Japanese and
         contemporary cuisine. Our menu evolves with the seasons, featuring
         locally sourced ingredients and thoughtfully crafted flavors.
-      </motion.p>
-      <motion.p variants={item} className="text-muted leading-relaxed">
+      </Motion.p>
+      <Motion.p variants={item} className="text-muted leading-relaxed">
         Founded with a passion for hospitality, we aim to create a warm,
         intimate dining experience. Whether you're here for a comforting bowl of
         ramen or an adventurous tasting flight, we strive to delight every
         guest.
-      </motion.p>
+      </Motion.p>
 
-      <motion.div variants={item}>
+      <Motion.div variants={item}>
         <ReservationButton />
-      </motion.div>
+      </Motion.div>
 
-      <motion.div
+      <Motion.div
         variants={item}
         className="gap-4 text-sm grid md:grid-cols-2 justify-between"
       >
         <div>
-          <motion.h2
+          <Motion.h2
             variants={item}
             className="font-semibold mb-1 text-muted text-lg"
           >
             Hours
-          </motion.h2>
+          </Motion.h2>
           {settings.hours_of_operation_structured ? (
-            <motion.div variants={item}>
+            <Motion.div variants={item}>
               <StructuredHoursDisplay
                 hours={settings.hours_of_operation_structured}
               />
-            </motion.div>
+            </Motion.div>
           ) : settings.hours_of_operation ? (
-            <motion.pre
+            <Motion.pre
               variants={item}
               className="whitespace-pre-wrap text-neutral-600 dark:text-neutral-400"
             >
               {settings.hours_of_operation}
-            </motion.pre>
+            </Motion.pre>
           ) : (
             <ul className="*:flex *:gap-2 *:items-center space-y-0.5 text-neutral-600 text-nowrap dark:text-neutral-400">
-              <motion.li variants={item}>
+              <Motion.li variants={item}>
                 <FaClock className="text-primary" /> Wed: 5:00pm – 9:30pm
-              </motion.li>
-              <motion.li variants={item}>
+              </Motion.li>
+              <Motion.li variants={item}>
                 <FaClock className="text-primary" /> Thu: 5:00pm – 9:30pm
-              </motion.li>
-              <motion.li variants={item}>
+              </Motion.li>
+              <Motion.li variants={item}>
                 <FaClock className="text-primary" /> Fri: 12:00am – 3:00pm /
                 5:00pm - 10:00pm
-              </motion.li>
-              <motion.li variants={item}>
+              </Motion.li>
+              <Motion.li variants={item}>
                 <FaClock className="text-primary" /> Sat: 12:00am – 3:00pm /
                 5:00pm - 10:00pm
-              </motion.li>
-              <motion.li variants={item}>
+              </Motion.li>
+              <Motion.li variants={item}>
                 <FaClock className="text-primary" /> Sun: 5:00pm – 9:00pm
-              </motion.li>
+              </Motion.li>
             </ul>
           )}
         </div>
 
         <div>
-          <motion.h2
+          <Motion.h2
             variants={item}
             className="font-semibold mb-1 text-muted text-lg"
           >
             Contact
-          </motion.h2>
+          </Motion.h2>
           <ul className="space-y-2 *:flex *:items-center *:gap-2 text-neutral-600 dark:text-neutral-400 ">
             {settings.location && (
-              <motion.a
+              <Motion.a
                 whileHover={{ y: -1, scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 target="_blank"
@@ -149,11 +162,11 @@ export default function AboutPage() {
                   </div>
                   <FaArrowRightFromBracket className="text-contrast" />
                 </li>
-              </motion.a>
+              </Motion.a>
             )}
 
             {settings.contact_email && (
-              <motion.a
+              <Motion.a
                 whileHover={{ y: -1, scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 target="_blank"
@@ -174,12 +187,12 @@ export default function AboutPage() {
                   </div>
                   <FaArrowRightFromBracket className="text-contrast" />
                 </li>
-              </motion.a>
+              </Motion.a>
             )}
 
             {settings.phone_number && (
               <li className="flex items-center justify-between gap-2 w-full ">
-                <motion.a
+                <Motion.a
                   whileHover={{ y: -1, scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   target="_blank"
@@ -200,7 +213,7 @@ export default function AboutPage() {
                     </div>
                     <FaArrowRightFromBracket className="text-contrast" />
                   </div>
-                </motion.a>
+                </Motion.a>
                 <button
                   className="ml-2 px-3 py-2 rounded-2xl border border-secondary/40 hover:bg-secondary/10 text-sm"
                   onClick={async () => {
@@ -225,7 +238,7 @@ export default function AboutPage() {
           </ul>
 
           {settings.social_links && (
-            <motion.div variants={item} className="mt-3">
+            <Motion.div variants={item} className="mt-3">
               <h3 className="font-semibold text-muted text-lg mb-1">
                 Follow us
               </h3>
@@ -237,7 +250,7 @@ export default function AboutPage() {
                     )
                 ).map((s, i) => (
                   <li key={i}>
-                    <motion.a
+                    <Motion.a
                       whileHover={{ y: -1, scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-secondary/40 bg-secondary/10 hover:bg-secondary/20 transition-colors"
@@ -247,15 +260,15 @@ export default function AboutPage() {
                     >
                       <SocialIcon name={s.name} url={s.url} />
                       <span className="text-sm text-base-fg">{s.name}</span>
-                    </motion.a>
+                    </Motion.a>
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </Motion.div>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </Motion.div>
+    </Motion.div>
   );
 }
 

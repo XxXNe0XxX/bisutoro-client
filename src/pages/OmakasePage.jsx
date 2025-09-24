@@ -82,20 +82,27 @@ export default function OmakasePage() {
           Is Omakase right for me?
         </Motion.h2>
         <Motion.p variants={item} className="text-muted">
-          If you enjoy trying new flavors and trust the chef to guide your meal, Omakase is a
-          perfect fit. Prefer to choose each dish? Explore our regular menu instead — you can always
-          add an Omakase experience next time.
+          If you enjoy trying new flavors and trust the chef to guide your meal,
+          Omakase is a perfect fit. Prefer to choose each dish? Explore our
+          regular menu instead — you can always add an Omakase experience next
+          time.
         </Motion.p>
-        <Motion.div variants={item} className="flex gap-2 pt-2">
-          <Motion.div whileHover={{ y: -1, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <Motion.div variants={item} className="flex gap-2 pt-2 items-center">
+          <Motion.div
+            whileHover={{ y: -1, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <Link
               to="/menu"
-              className="px-3 py-2 font-semibold text-center rounded-2xl bg-primary text-contrast "
+              className="p-3 font-semibold text-center rounded-2xl bg-primary text-contrast "
             >
               View the Menu
             </Link>
           </Motion.div>
-          <Motion.div whileHover={{ y: -1, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Motion.div
+            whileHover={{ y: -1, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <ReservationButton />
           </Motion.div>
         </Motion.div>
