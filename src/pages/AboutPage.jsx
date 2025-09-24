@@ -16,7 +16,11 @@ import {
 } from "react-icons/fa6";
 import ReservationButton from "../components/ui/ReservationButton";
 import { useQuery } from "@tanstack/react-query";
-import { getPublicAppSettings, trackPhoneAction, trackEmailAction } from "../lib/api";
+import {
+  getPublicAppSettings,
+  trackPhoneAction,
+  trackEmailAction,
+} from "../lib/api";
 import { motion } from "motion/react";
 
 export default function AboutPage() {
@@ -44,33 +48,47 @@ export default function AboutPage() {
   };
 
   return (
-    <motion.div className="space-y-6 p-3" initial="hidden" animate="show" variants={container}>
+    <motion.div
+      className="space-y-6 p-3"
+      initial="hidden"
+      animate="show"
+      variants={container}
+    >
       <motion.h1 variants={item} className="text-3xl font-bold text-primary">
         About Us
       </motion.h1>
       <motion.p variants={item} className="text-muted leading-relaxed">
-        Bisutoro is a modern bistro inspired by the harmony of Japanese and contemporary cuisine.
-        Our menu evolves with the seasons, featuring locally sourced ingredients and thoughtfully
-        crafted flavors.
+        Bisutoro is a modern bistro inspired by the harmony of Japanese and
+        contemporary cuisine. Our menu evolves with the seasons, featuring
+        locally sourced ingredients and thoughtfully crafted flavors.
       </motion.p>
       <motion.p variants={item} className="text-muted leading-relaxed">
-        Founded with a passion for hospitality, we aim to create a warm, intimate dining
-        experience. Whether you're here for a comforting bowl of ramen or an adventurous tasting
-        flight, we strive to delight every guest.
+        Founded with a passion for hospitality, we aim to create a warm,
+        intimate dining experience. Whether you're here for a comforting bowl of
+        ramen or an adventurous tasting flight, we strive to delight every
+        guest.
       </motion.p>
 
       <motion.div variants={item}>
         <ReservationButton />
       </motion.div>
 
-      <motion.div variants={item} className="gap-4 text-sm grid md:grid-cols-2 justify-between">
+      <motion.div
+        variants={item}
+        className="gap-4 text-sm grid md:grid-cols-2 justify-between"
+      >
         <div>
-          <motion.h2 variants={item} className="font-semibold mb-1 text-muted text-lg">
+          <motion.h2
+            variants={item}
+            className="font-semibold mb-1 text-muted text-lg"
+          >
             Hours
           </motion.h2>
           {settings.hours_of_operation_structured ? (
             <motion.div variants={item}>
-              <StructuredHoursDisplay hours={settings.hours_of_operation_structured} />
+              <StructuredHoursDisplay
+                hours={settings.hours_of_operation_structured}
+              />
             </motion.div>
           ) : settings.hours_of_operation ? (
             <motion.pre
@@ -88,10 +106,12 @@ export default function AboutPage() {
                 <FaClock className="text-primary" /> Thu: 5:00pm – 9:30pm
               </motion.li>
               <motion.li variants={item}>
-                <FaClock className="text-primary" /> Fri: 12:00am – 3:00pm / 5:00pm - 10:00pm
+                <FaClock className="text-primary" /> Fri: 12:00am – 3:00pm /
+                5:00pm - 10:00pm
               </motion.li>
               <motion.li variants={item}>
-                <FaClock className="text-primary" /> Sat: 12:00am – 3:00pm / 5:00pm - 10:00pm
+                <FaClock className="text-primary" /> Sat: 12:00am – 3:00pm /
+                5:00pm - 10:00pm
               </motion.li>
               <motion.li variants={item}>
                 <FaClock className="text-primary" /> Sun: 5:00pm – 9:00pm
@@ -101,7 +121,10 @@ export default function AboutPage() {
         </div>
 
         <div>
-          <motion.h2 variants={item} className="font-semibold mb-1 text-muted text-lg">
+          <motion.h2
+            variants={item}
+            className="font-semibold mb-1 text-muted text-lg"
+          >
             Contact
           </motion.h2>
           <ul className="space-y-2 *:flex *:items-center *:gap-2 text-neutral-600 dark:text-neutral-400 ">
@@ -182,8 +205,13 @@ export default function AboutPage() {
                   className="ml-2 px-3 py-2 rounded-2xl border border-secondary/40 hover:bg-secondary/10 text-sm"
                   onClick={async () => {
                     try {
-                      await navigator.clipboard.writeText(settings.phone_number);
-                      await trackPhoneAction({ phone: settings.phone_number, action: "copy" });
+                      await navigator.clipboard.writeText(
+                        settings.phone_number
+                      );
+                      await trackPhoneAction({
+                        phone: settings.phone_number,
+                        action: "copy",
+                      });
                     } catch {
                       // ignore
                     }
@@ -198,11 +226,15 @@ export default function AboutPage() {
 
           {settings.social_links && (
             <motion.div variants={item} className="mt-3">
-              <h3 className="font-semibold text-muted text-lg mb-1">Follow us</h3>
+              <h3 className="font-semibold text-muted text-lg mb-1">
+                Follow us
+              </h3>
               <ul className="flex flex-wrap gap-2">
                 {(Array.isArray(settings.social_links)
                   ? settings.social_links
-                  : Object.entries(settings.social_links).map(([name, url]) => ({ name, url }))
+                  : Object.entries(settings.social_links).map(
+                      ([name, url]) => ({ name, url })
+                    )
                 ).map((s, i) => (
                   <li key={i}>
                     <motion.a
