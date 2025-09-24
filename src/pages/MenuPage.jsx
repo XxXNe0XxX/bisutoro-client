@@ -312,7 +312,7 @@ export default function MenuPage() {
           </div>
         </div>
       </Motion.div>
-      {!query.trim() && (
+      {!query.trim() ? (
         <Motion.header
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -359,6 +359,8 @@ export default function MenuPage() {
             </li>
           </ul>
         </Motion.header>
+      ) : (
+        <div className="h-10"></div>
       )}
       {isLoading && (
         <div className="space-y-4">
