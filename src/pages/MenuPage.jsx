@@ -281,7 +281,7 @@ export default function MenuPage() {
         initial={{ y: -12, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-10"
+        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-30"
       >
         <FaSearchengin className="w-auto h-6" />
         <div className="relative w-full">

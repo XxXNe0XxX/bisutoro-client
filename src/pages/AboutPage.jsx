@@ -58,12 +58,12 @@ export default function AboutPage() {
         initial="hidden"
         animate="show"
         variants={item}
-        className="rounded-2xl border border-background overflow-hidden"
+        className="rounded-t-2xl border border-background overflow-hidden"
       >
         <img
           height={100}
           width={100}
-          className=" w-full object-cover mask-b-from-0 max-h-64 "
+          className=" w-full object-cover mask-b-from-50% max-h-64 "
           src="https://ik.imagekit.io/quolb5yjy/Restaurant%20Sign?updatedAt=1758685215874"
         ></img>
       </Motion.div>

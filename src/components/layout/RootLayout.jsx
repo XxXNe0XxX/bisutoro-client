@@ -40,19 +40,10 @@ export default function RootLayout() {
       <Navbar items={isDashboard ? dashboardNav : siteNav} />
       <div className="md:pl-64 ">
         {/* Mobile top-bar height spacer */}
-        <main>
-          <Motion.div
-            key={location.pathname}
-            initial={{ x: -24, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            style={{ willChange: "transform, opacity" }}
-            className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden "
-          >
-            <div className="h-0 md:h-14" />
+        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden ">
+          <div className="h-0 md:h-14" />
 
-            <Outlet />
-          </Motion.div>
+          <Outlet />
         </main>
         <footer className="py-2 text-sm opacity-30 text-center text-base-fg">
           <p>
