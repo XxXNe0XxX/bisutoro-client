@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaSearchengin } from "react-icons/fa6";
 import { ClipLoader } from "react-spinners";
+import Quantity from "../components/ui/Quantity";
 import {
   getMenu,
   getDailyMenu,
@@ -542,10 +543,10 @@ export default function MenuPage() {
                                   Number(item.pieces_per_order)
                                 ) &&
                                   Number(item.pieces_per_order) > 0 && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded-2xl bg-secondary/30 text-base-fg whitespace-nowrap">
+                                    <Quantity>
                                       {Number(item.pieces_per_order)}{" "}
                                       {item.pieces_per_order > 1 ? "pcs" : "pc"}
-                                    </span>
+                                    </Quantity>
                                   )}
                               </span>
                             </div>
@@ -630,10 +631,10 @@ export default function MenuPage() {
                           ${item.price}
                           {Number.isFinite(Number(item.pieces_per_order)) &&
                             Number(item.pieces_per_order) > 0 && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-2xl bg-secondary/30 text-base-fg whitespace-nowrap">
+                              <Quantity>
                                 {Number(item.pieces_per_order)}{" "}
                                 {item.pieces_per_order > 1 ? "pcs" : "pc"}
-                              </span>
+                              </Quantity>
                             )}
                         </span>
                         {item.reviews?.avg_rating != null &&

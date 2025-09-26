@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Quantity from "../components/ui/Quantity";
 import {
   getMenuItem,
   createItemReview,
@@ -140,10 +141,10 @@ export default function ItemPage() {
                 ${item.price}
                 {Number.isFinite(Number(item.pieces_per_order)) &&
                   Number(item.pieces_per_order) > 0 && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-2xl bg-secondary/30 text-base-fg whitespace-nowrap">
+                    <Quantity>
                       {Number(item.pieces_per_order)}{" "}
                       {item.pieces_per_order > 1 ? "pcs" : "pc"}
-                    </span>
+                    </Quantity>
                   )}
               </span>
               <div className="text-sm text-muted">{item.category}</div>
