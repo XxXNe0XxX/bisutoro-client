@@ -466,6 +466,82 @@ export async function getPublicAppSettings() {
   return res?.app_settings || res;
 }
 
+// ---- Drinks (public) ----
+export async function getDrinksMenu() {
+  const res = await request(`/api/drinks`);
+  // Server returns { sections: [...] }
+  return Array.isArray(res?.sections) ? res.sections : [];
+}
+
+// ---- Drinks (admin) ----
+export async function createDrinksSection(payload) {
+  return await request(`/api/drinks/sections`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateDrinksSection(id, payload) {
+  return await request(`/api/drinks/sections/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteDrinksSection(id) {
+  return await request(`/api/drinks/sections/${id}`, { method: "DELETE" });
+}
+
+export async function reorderDrinksSections(orderIds) {
+  return await request(`/api/drinks/sections/reorder`, {
+    method: "POST",
+    body: JSON.stringify({ order: orderIds }),
+  });
+}
+
+export async function createDrinksGroup(payload) {
+  return await request(`/api/drinks/groups`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateDrinksGroup(id, payload) {
+  return await request(`/api/drinks/groups/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteDrinksGroup(id) {
+  return await request(`/api/drinks/groups/${id}`, { method: "DELETE" });
+}
+
+export async function reorderDrinksGroups(sectionId, orderIds) {
+  return await request(`/api/drinks/sections/${sectionId}/groups/reorder`, {
+    method: "POST",
+    body: JSON.stringify({ order: orderIds }),
+  });
+}
+
+export async function createDrinksItem(payload) {
+  return await request(`/api/drinks/items`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateDrinksItem(id, payload) {
+  return await request(`/api/drinks/items/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteDrinksItem(id) {
+  return await request(`/api/drinks/items/${id}`, { method: "DELETE" });
+}
+
 // ---- Admin stats ----
 export async function getVisitorTotals() {
   const res = await request(`/api/admin/metrics/visitors/totals`);

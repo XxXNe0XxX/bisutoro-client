@@ -16,6 +16,8 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import ItemPage from "./pages/ItemPage";
 import OmakasePage from "./pages/OmakasePage";
+import DrinksPage from "./pages/DrinksPage";
+import DashboardDrinks from "./pages/dashboard/Drinks";
 
 export default function App() {
   return (
@@ -24,6 +26,7 @@ export default function App() {
         <Route index element={<MenuPage />} />
         <Route path="menu" element={<MenuPage />} />
         <Route path="menu/:id" element={<ItemPage />} />
+        <Route path="drinks" element={<DrinksPage />} />
         <Route path="omakase" element={<OmakasePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="login" element={<LoginPage />} />
@@ -34,6 +37,7 @@ export default function App() {
             <Route path="items/new" element={<DashboardItemNew />} />
             <Route path="daily" element={<DashboardDaily />} />
             <Route path="statistics" element={<DashboardStatistics />} />
+            <Route path="drinks" element={<DashboardDrinks />} />
             <Route path="categories" element={<DashboardCategories />} />
             <Route path="reviews" element={<DashboardReviews />} />
             <Route path="hours" element={<DashboardHours />} />
