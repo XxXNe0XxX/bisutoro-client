@@ -127,8 +127,10 @@ export default function Navbar({ items }) {
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `block px-3 py-2  transition-colors mask-r-from-0% border border-transparent  ${
-                    isActive ? "bg-primary text-contrast" : "text-base-fg"
+                  `block px-3 py-2 transition-all mask-r-from-0% border border-transparent  ${
+                    isActive
+                      ? "bg-primary text-contrast tracking-widest font-semibold"
+                      : "text-base-fg"
                   }`
                 }
                 end={item.end}
