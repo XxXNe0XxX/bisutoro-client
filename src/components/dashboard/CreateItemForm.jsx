@@ -422,7 +422,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                       accept="image/*"
                       capture="environment"
                       onChange={handleFilePick}
-                      className="block"
+                      className="block bg-secondary w-full rounded-sm p-2 text-contrast"
                     />
                   </IKContext>
                   <div className="text-xs text-muted mt-1">

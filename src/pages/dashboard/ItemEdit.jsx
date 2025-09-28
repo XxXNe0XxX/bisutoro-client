@@ -433,6 +433,7 @@ export default function DashboardItemEdit() {
                       accept="image/*"
                       capture="environment"
                       onChange={handleFilePick}
+                      className="block bg-secondary w-full rounded-sm p-2 text-contrast"
                     />
                   </IKContext>
                   <div className="text-xs text-muted mt-1">
