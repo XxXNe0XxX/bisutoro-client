@@ -3,7 +3,7 @@
 @theme {
   --color-primary: #120d4f;
   --color-secondary: #5a5680;
-  --color-background: #ebeafa;
+  --color-background: #d7d5f5;
   --color-text: #000000;
   --color-info: #0369a1;
   --color-success: #157f3c;
@@ -11,7 +11,7 @@
   --color-danger: #ee4343;
   --primary: #120d4f;
   --secondary: #5a5680;
-  --background: #ebeafa;
+  --background: #d7d5f5;
   --text: #000000;
   --muted: #818181;
   --text-contrast: #ffffff;

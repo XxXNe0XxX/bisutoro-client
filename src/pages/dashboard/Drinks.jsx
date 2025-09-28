@@ -593,7 +593,7 @@ export default function DashboardDrinks() {
                       return (
                         <div
                           key={g.id}
-                          className="rounded-xl border border-secondary/30 p-2 bg-secondary/10"
+                          className="rounded-xl border border-secondary/30 p-2 "
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-secondary/20 rounded-md">
                             <div className="font-medium flex items-center text-base-fg gap-4 text-nowrap ">

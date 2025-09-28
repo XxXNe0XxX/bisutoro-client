@@ -129,7 +129,7 @@ export default function Navbar({ items }) {
                 className={({ isActive }) =>
                   `block px-3 py-2 transition-all mask-r-from-0% border border-transparent  ${
                     isActive
-                      ? "bg-primary text-contrast tracking-widest font-semibold"
+                      ? "bg-primary text-contrast tracking-widest font-bold"
                       : "text-base-fg"
                   }`
                 }
