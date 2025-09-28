@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 function toCurrency(n) {
   const val = Number(n ?? 0);
@@ -15,6 +16,7 @@ export default function MenuItemRow({
   isSaving,
   isDeleting,
 }) {
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [edit, setEdit] = useState(() => ({
     name: item.name ?? "",
@@ -271,7 +273,7 @@ export default function MenuItemRow({
         ) : (
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setEditing(true)}
+              onClick={() => navigate(`/dashboard/items/${item.id}/edit`)}
               className="px-3 py-1 rounded bg-secondary text-contrast"
             >
               Edit

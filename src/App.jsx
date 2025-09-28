@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import DashboardOverview from "./pages/dashboard/Overview";
 import DashboardItems from "./pages/dashboard/Items";
 import DashboardItemNew from "./pages/dashboard/ItemNew";
+import DashboardItemEdit from "./pages/dashboard/ItemEdit";
 import DashboardCategories from "./pages/dashboard/Categories";
 import DashboardSettings from "./pages/dashboard/Settings";
 import DashboardHours from "./pages/dashboard/Hours";
@@ -35,6 +36,7 @@ export default function App() {
             <Route index element={<DashboardOverview />} />
             <Route path="items" element={<DashboardItems />} />
             <Route path="items/new" element={<DashboardItemNew />} />
+            <Route path="items/:id/edit" element={<DashboardItemEdit />} />
             <Route path="daily" element={<DashboardDaily />} />
             <Route path="statistics" element={<DashboardStatistics />} />
             <Route path="drinks" element={<DashboardDrinks />} />
