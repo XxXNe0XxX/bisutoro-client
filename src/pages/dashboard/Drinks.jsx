@@ -358,7 +358,7 @@ export default function DashboardDrinks() {
         </div>
         <div>
           <label className="text-sm text-muted">Ingredients</label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <input
               value={ingredientInput}
               onChange={(e) => setIngredientInput(e.target.value)}
@@ -392,14 +392,14 @@ export default function DashboardDrinks() {
         </div>
         <div>
           <label className="text-sm text-muted">Amounts</label>
-          <div className="space-y-2">
+          <div className="space-y-3 pb-3">
             {amounts.map((a, idx) => (
-              <div key={idx} className="flex items-center gap-2">
+              <div key={idx} className="flex items-center gap-2 flex-wrap">
                 <input
                   placeholder="Size"
                   value={a.size}
                   onChange={(e) => updateAmount(idx, { size: e.target.value })}
-                  className="w-40 rounded-2xl p-2 border border-secondary/40 bg-background"
+                  className="w-24 md:w-auto rounded-2xl p-2 border border-secondary/40 bg-background"
                 />
                 <input
                   type="number"
@@ -407,12 +407,12 @@ export default function DashboardDrinks() {
                   min="0"
                   value={a.price}
                   onChange={(e) => updateAmount(idx, { price: e.target.value })}
-                  className="w-32 rounded-2xl p-2 border border-secondary/40 bg-background"
+                  className="w-18 md:w-auto rounded-2xl p-2 border border-secondary/40 bg-background"
                 />
                 <button
                   type="button"
                   onClick={() => removeAmount(idx)}
-                  className="px-2 py-1 rounded bg-danger text-contrast"
+                  className="p-2 rounded bg-danger text-contrast"
                 >
                   Remove
                 </button>
