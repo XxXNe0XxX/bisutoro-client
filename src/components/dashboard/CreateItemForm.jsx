@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { IKContext, IKUpload } from "imagekitio-react";
+import { IKContext } from "imagekitio-react";
+import imageCompression from "browser-image-compression";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -71,6 +72,91 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
   }, [form]);
 
   const canSubmit = Object.keys(errors).length === 0;
+
+  // ImageKit env & helpers for direct upload
+  const publicKey = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
+  const urlEndpoint = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
+  const configuredAuthEndpoint = import.meta.env.VITE_IMAGEKIT_AUTH_ENDPOINT;
+  const enabledUpload = publicKey && urlEndpoint;
+
+  const getIKAuth = async () => {
+    if (!enabledUpload) return null;
+    try {
+      if (!configuredAuthEndpoint || configuredAuthEndpoint.startsWith("/")) {
+        return await request("/api/imagekit/auth", { method: "POST" });
+      }
+      const { token } = getStoredToken();
+      const res = await fetch(configuredAuthEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error(`Auth failed ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      console.error("ImageKit authenticator error", e);
+      throw e;
+    }
+  };
+
+  async function handleFilePick(ev) {
+    try {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      // Quick client-side guardrail
+      if (file.size > 20 * 1024 * 1024) {
+        alert("Selected file is too large. Please choose a smaller image.");
+        return;
+      }
+      setUploading(true);
+      // Compress using browser-image-compression
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 10,
+        maxWidthOrHeight: 1600,
+        useWebWorker: true,
+        initialQuality: 0.75,
+      });
+
+      const auth = await getIKAuth();
+      if (!auth) throw new Error("Image upload is not configured.");
+
+      const baseName = (form.name || "item-image").replace(/\s+/g, "-");
+      const fileName = baseName + ".jpg";
+
+      const fd = new FormData();
+      fd.append("file", compressed, fileName);
+      fd.append("fileName", fileName);
+      fd.append("publicKey", publicKey);
+      fd.append("signature", auth.signature);
+      fd.append("token", auth.token);
+      fd.append("expire", String(auth.expire));
+      // Optional: folder, tags, isPrivateFile, useUniqueFileName, etc.
+
+      const res = await fetch(
+        "https://upload.imagekit.io/api/v1/files/upload",
+        {
+          method: "POST",
+          body: fd,
+        }
+      );
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        throw new Error(t || `Upload failed (${res.status})`);
+      }
+      const data = await res.json();
+      setForm((f) => ({ ...f, url: data?.url || "" }));
+    } catch (e) {
+      console.error("Image upload failed", e);
+      const msg = e?.message || "Upload failed";
+      alert(msg);
+    } finally {
+      setUploading(false);
+      if (ev?.target) ev.target.value = "";
+    }
+  }
 
   function submit(e) {
     e.preventDefault();
@@ -327,96 +413,29 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                 </div>
               )}
 
-              {/* ImageKit uploader if configured via env */}
-              {(() => {
-                const publicKey = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
-                const urlEndpoint = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
-                const configuredAuthEndpoint = import.meta.env
-                  .VITE_IMAGEKIT_AUTH_ENDPOINT;
-                const enabled = publicKey && urlEndpoint;
-                if (!enabled) {
-                  return (
-                    <div className="text-xs text-muted">
-                      To enable uploads, set VITE_IMAGEKIT_PUBLIC_KEY and
-                      VITE_IMAGEKIT_URL_ENDPOINT in your environment. Also set
-                      VITE_IMAGEKIT_AUTH_ENDPOINT or rely on same-origin
-                      /api/imagekit/auth.
-                    </div>
-                  );
-                }
-                const authenticator = async () => {
-                  try {
-                    // Prefer same-origin via our request helper (adds auth + refresh)
-                    if (
-                      !configuredAuthEndpoint ||
-                      configuredAuthEndpoint.startsWith("/")
-                    ) {
-                      return await request("/api/imagekit/auth", {
-                        method: "POST",
-                      });
-                    }
-                    // Absolute endpoint path; attach Authorization manually
-                    const { token } = getStoredToken();
-                    const res = await fetch(configuredAuthEndpoint, {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                      },
-                      credentials: "include",
-                    });
-                    if (!res.ok) {
-                      const t = await res.text().catch(() => "");
-                      throw new Error(
-                        `Auth failed ${res.status}: ${t || res.statusText}`
-                      );
-                    }
-                    return await res.json();
-                  } catch (e) {
-                    console.error("ImageKit authenticator error", e);
-                    throw e;
-                  }
-                };
-                return (
-                  <IKContext
-                    publicKey={publicKey}
-                    urlEndpoint={urlEndpoint}
-                    authenticator={authenticator}
-                  >
-                    <IKUpload
-                      fileName={(form.name || "item-image").replace(
-                        /\s+/g,
-                        "-"
-                      )}
-                      onUploadStart={() => setUploading(true)}
-                      onSuccess={(res) => {
-                        setUploading(false);
-                        setForm((f) => ({ ...f, url: res?.url || "" }));
-                      }}
-                      onError={(err) => {
-                        console.error("Image upload failed", err);
-                        alert(
-                          (err && (err.message || err.response?.message)) ||
-                            "Upload failed"
-                        );
-                        setUploading(false);
-                      }}
+              {/* Image upload with client-side compression */}
+              {enabledUpload ? (
+                <>
+                  <IKContext publicKey={publicKey} urlEndpoint={urlEndpoint}>
+                    <input
+                      type="file"
                       accept="image/*"
                       capture="environment"
-                      validateFile={(file) => {
-                        const maxSize = 5 * 1024 * 1024; // 5MB
-                        if (file.size > maxSize) return false;
-                        return /^image\//.test(file.type);
-                      }}
-                      className="px-3 py-2 rounded bg-secondary text-contrast w-full"
+                      onChange={handleFilePick}
+                      className="block"
                     />
-                    <div className="text-xs text-muted mt-1">
-                      Uploads are stored via ImageKit. Max 5MB. Images are
-                      publicly accessible.
-                    </div>
                   </IKContext>
-                );
-              })()}
+                  <div className="text-xs text-muted mt-1">
+                    Images are compressed (~1.5MB, max 1600px) before uploading
+                    to ImageKit.
+                  </div>
+                </>
+              ) : (
+                <div className="text-xs text-muted">
+                  To enable uploads, set VITE_IMAGEKIT_PUBLIC_KEY and
+                  VITE_IMAGEKIT_URL_ENDPOINT.
+                </div>
+              )}
 
               {/* Preview & clear */}
               {form.url ? (

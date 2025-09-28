@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { IKContext, IKUpload } from "imagekitio-react";
+import { IKContext } from "imagekitio-react";
+import imageCompression from "browser-image-compression";
 import Modal from "../../components/ui/Modal";
 import {
   getMenuItem,
@@ -195,6 +196,57 @@ export default function DashboardItemEdit() {
     }
   };
 
+  // Reuse authenticator for direct upload
+  const getIKAuth = authenticator;
+
+  async function handleFilePick(ev) {
+    try {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      if (file.size > 20 * 1024 * 1024) {
+        alert("Selected file is too large. Please choose a smaller image.");
+        return;
+      }
+      setUploading(true);
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 1.5,
+        maxWidthOrHeight: 1600,
+        useWebWorker: true,
+        initialQuality: 0.75,
+      });
+      const auth = await getIKAuth();
+      if (!auth) throw new Error("Image upload is not configured.");
+      const baseName = (form.name || "item-image").replace(/\s+/g, "-");
+      const fileName = baseName + ".jpg";
+      const fd = new FormData();
+      fd.append("file", compressed, fileName);
+      fd.append("fileName", fileName);
+      fd.append("publicKey", publicKey);
+      fd.append("signature", auth.signature);
+      fd.append("token", auth.token);
+      fd.append("expire", String(auth.expire));
+      const res = await fetch(
+        "https://upload.imagekit.io/api/v1/files/upload",
+        {
+          method: "POST",
+          body: fd,
+        }
+      );
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        throw new Error(t || `Upload failed (${res.status})`);
+      }
+      const data = await res.json();
+      setForm((f) => ({ ...f, url: data?.url || "" }));
+    } catch (e) {
+      console.error("Image upload failed", e);
+      alert(e?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+      if (ev?.target) ev.target.value = "";
+    }
+  }
+
   return (
     <div className="p-3 space-y-4 text-base-fg">
       <div className="flex items-center justify-between">
@@ -374,41 +426,20 @@ export default function DashboardItemEdit() {
                 </div>
               )}
               {enabledUpload ? (
-                <IKContext
-                  publicKey={publicKey}
-                  urlEndpoint={urlEndpoint}
-                  authenticator={authenticator}
-                >
-                  <IKUpload
-                    fileName={(form.name || "item-image").replace(/\s+/g, "-")}
-                    onUploadStart={() => setUploading(true)}
-                    onSuccess={(res) => {
-                      setUploading(false);
-                      setForm((f) => ({ ...f, url: res?.url || "" }));
-                    }}
-                    onError={(err) => {
-                      console.error("Image upload failed", err);
-                      alert(
-                        (err && (err.message || err.response?.message)) ||
-                          "Upload failed"
-                      );
-                      setUploading(false);
-                    }}
-                    // Hint mobile browsers to open camera
-                    accept="image/*"
-                    capture="environment"
-                    validateFile={(file) => {
-                      const maxSize = 5 * 1024 * 1024; // 5MB
-                      if (file.size > maxSize) return false;
-                      return /^image\//.test(file.type);
-                    }}
-                    className="px-3 py-2 rounded bg-secondary text-contrast w-full"
-                  />
+                <>
+                  <IKContext publicKey={publicKey} urlEndpoint={urlEndpoint}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleFilePick}
+                    />
+                  </IKContext>
                   <div className="text-xs text-muted mt-1">
-                    Uploads are stored via ImageKit. Max 5MB. Images are
-                    publicly accessible.
+                    Images are compressed (~1.5MB, max 1600px) before uploading
+                    to ImageKit.
                   </div>
-                </IKContext>
+                </>
               ) : (
                 <div className="text-xs text-muted">
                   To enable uploads, set VITE_IMAGEKIT_PUBLIC_KEY and
