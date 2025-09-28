@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { IKContext, IKUpload } from "imagekitio-react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { listCategories } from "../../lib/api";
+import { listCategories, request, getStoredToken } from "../../lib/api";
 import { FaPlus } from "react-icons/fa6";
 
 const NAME_MAX = 100;
@@ -21,6 +22,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
     vegan: false,
     gluten_free: false,
     pieces_per_order: "",
+    url: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
@@ -81,6 +83,10 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
         const n = Number(raw);
         return Number.isInteger(n) && n > 0 ? n : undefined;
       })(),
+      url: (() => {
+        const raw = String(form.url || "").trim();
+        return raw ? raw : undefined;
+      })(),
     };
     onCreate(payload, () =>
       setForm({
@@ -93,6 +99,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
         vegan: false,
         gluten_free: false,
         pieces_per_order: "",
+        url: "",
       })
     );
   }
@@ -286,6 +293,131 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Image upload (ImageKit) + manual URL fallback */}
+          <div className="md:col-span-2">
+            <label className="text-sm text-muted">Image (optional)</label>
+            <div className="space-y-2">
+              {/* Manual URL input (always available) */}
+              <input
+                type="url"
+                inputMode="url"
+                placeholder="Paste an image URL or upload below"
+                value={form.url}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, url: e.target.value }))
+                }
+                className="w-full rounded-2xl p-1 px-2 border border-secondary/40 bg-background text-base-fg"
+              />
+
+              {/* ImageKit uploader if configured via env */}
+              {(() => {
+                const publicKey = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
+                const urlEndpoint = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
+                const configuredAuthEndpoint = import.meta.env
+                  .VITE_IMAGEKIT_AUTH_ENDPOINT;
+                const enabled = publicKey && urlEndpoint;
+                if (!enabled) {
+                  return (
+                    <div className="text-xs text-muted">
+                      To enable uploads, set VITE_IMAGEKIT_PUBLIC_KEY and
+                      VITE_IMAGEKIT_URL_ENDPOINT in your environment. Also set
+                      VITE_IMAGEKIT_AUTH_ENDPOINT or rely on same-origin
+                      /api/imagekit/auth.
+                    </div>
+                  );
+                }
+                const authenticator = async () => {
+                  try {
+                    // Prefer same-origin via our request helper (adds auth + refresh)
+                    if (
+                      !configuredAuthEndpoint ||
+                      configuredAuthEndpoint.startsWith("/")
+                    ) {
+                      return await request("/api/imagekit/auth", {
+                        method: "POST",
+                      });
+                    }
+                    // Absolute endpoint path; attach Authorization manually
+                    const { token } = getStoredToken();
+                    const res = await fetch(configuredAuthEndpoint, {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                      },
+                      credentials: "include",
+                    });
+                    if (!res.ok) {
+                      const t = await res.text().catch(() => "");
+                      throw new Error(
+                        `Auth failed ${res.status}: ${t || res.statusText}`
+                      );
+                    }
+                    return await res.json();
+                  } catch (e) {
+                    console.error("ImageKit authenticator error", e);
+                    throw e;
+                  }
+                };
+                return (
+                  <IKContext
+                    publicKey={publicKey}
+                    urlEndpoint={urlEndpoint}
+                    authenticator={authenticator}
+                  >
+                    <IKUpload
+                      fileName={(form.name || "item-image").replace(
+                        /\s+/g,
+                        "-"
+                      )}
+                      onSuccess={(res) =>
+                        setForm((f) => ({ ...f, url: res?.url || "" }))
+                      }
+                      onError={(err) => {
+                        console.error("Image upload failed", err);
+                        // Lightweight inline message; avoid toasts for now
+                        alert(
+                          (err && (err.message || err.response?.message)) ||
+                            "Upload failed"
+                        );
+                      }}
+                      validateFile={(file) => {
+                        const maxSize = 5 * 1024 * 1024; // 5MB
+                        if (file.size > maxSize) return false;
+                        return /^image\//.test(file.type);
+                      }}
+                      className="px-3 py-2 rounded bg-secondary text-contrast"
+                    />
+                    <div className="text-xs text-muted mt-1">
+                      Uploads are stored via ImageKit. Max 5MB. Images are
+                      publicly accessible.
+                    </div>
+                  </IKContext>
+                );
+              })()}
+
+              {/* Preview & clear */}
+              {form.url ? (
+                <div className="mt-2 flex items-start gap-3">
+                  <img
+                    src={form.url}
+                    alt="Preview"
+                    className="h-24 w-24 object-cover rounded-xl border border-secondary/40"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, url: "" }))}
+                    className="px-3 py-2 rounded bg-secondary text-contrast"
+                  >
+                    Remove image
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
 
           <div className="md:col-span-6">
