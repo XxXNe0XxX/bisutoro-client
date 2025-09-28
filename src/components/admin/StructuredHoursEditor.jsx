@@ -56,7 +56,7 @@ function TimeRangePicker({ label, value, onChange }) {
           type="time"
           value={start}
           onChange={(e) => setRange(e.target.value, end)}
-          className="rounded-2xl  p-2 border border-secondary/40  bg-black text-white"
+          className="rounded-2xl min-w-[140px] p-2 border border-secondary/40  bg-black text-white"
           disabled={isClosed}
         />
         <span className="text-muted">to</span>
@@ -64,7 +64,7 @@ function TimeRangePicker({ label, value, onChange }) {
           type="time"
           value={end}
           onChange={(e) => setRange(start, e.target.value)}
-          className="rounded-2xl  p-2 border border-secondary/40  bg-black text-white"
+          className="rounded-2xl min-w-[140px] p-2 border border-secondary/40  bg-black text-white"
           disabled={isClosed}
         />
         <button
