@@ -151,7 +151,7 @@ export default function DrinksPage() {
                             <div className="font-medium">{it.name}</div>
                             {Array.isArray(it.ingredients) &&
                               it.ingredients.length > 0 && (
-                                <div className="text-xs text-muted">
+                                <div className="text-xs text-muted line-clamp-2">
                                   {it.ingredients.join(" + ")}
                                 </div>
                               )}

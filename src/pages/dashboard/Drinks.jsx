@@ -13,10 +13,17 @@ import {
   updateDrinksItem,
   deleteDrinksItem,
 } from "../../lib/api";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Modal from "../../components/ui/Modal";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
-import { FaArrowDown, FaArrowUp, FaP, FaPlus } from "react-icons/fa6";
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaP,
+  FaPlus,
+  FaChevronDown,
+} from "react-icons/fa6";
+import { ClipLoader } from "react-spinners";
 
 export default function DashboardDrinks() {
   const qc = useQueryClient();
@@ -25,6 +32,70 @@ export default function DashboardDrinks() {
     () => (Array.isArray(drinksQ.data) ? drinksQ.data : []),
     [drinksQ.data]
   );
+
+  // Search state (debounced)
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  useEffect(() => {
+    const q = (query || "").trim();
+    if (!q) {
+      setDebouncedQuery("");
+      setSearching(false);
+      return;
+    }
+    setSearching(true);
+    const t = setTimeout(() => {
+      setDebouncedQuery(q);
+      setSearching(false);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  // Collapse state
+  const [collapsedSections, setCollapsedSections] = useState(() => new Set());
+  const [collapsedGroups, setCollapsedGroups] = useState(() => new Set());
+  const toggleSection = (id) =>
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  const toggleGroup = (id) =>
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const filteredSections = useMemo(() => {
+    const q = (debouncedQuery || "").toLowerCase();
+    if (!q) return sections;
+    return sections
+      .map((sec) => ({
+        ...sec,
+        groups: (sec.groups || [])
+          .map((g) => ({
+            ...g,
+            items: (g.items || []).filter((it) => {
+              const name = (it.name || "").toLowerCase();
+              const origin = (it.origin || "").toLowerCase();
+              const ingredients = Array.isArray(it.ingredients)
+                ? it.ingredients.join(" ").toLowerCase()
+                : "";
+              return (
+                name.includes(q) ||
+                origin.includes(q) ||
+                (ingredients && ingredients.includes(q))
+              );
+            }),
+          }))
+          .filter((g) => (g.items || []).length > 0),
+      }))
+      .filter((sec) => (sec.groups || []).length > 0);
+  }, [sections, debouncedQuery]);
+
+  const list = filteredSections; // always render filtered (when q empty it's the original)
 
   const [state, setState] = useState({
     sectionModal: null, // { mode: 'create'|'edit', data? }
@@ -377,16 +448,45 @@ export default function DashboardDrinks() {
 
   return (
     <div className="space-y-6 p-3 text-base-fg">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Drinks</h1>
-        <button
-          className="px-3 py-1 rounded bg-primary text-contrast"
-          onClick={() =>
-            setState((s) => ({ ...s, sectionModal: { mode: "create" } }))
-          }
-        >
-          New section
-        </button>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <header className="flex items-center justify-between flex-wrap gap-3 w-full">
+          <h1 className="text-2xl font-semibold">Drinks</h1>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className=" rounded-2xl p-2 pr-10 border border-secondary/40 bg-background w-52"
+            />
+            <div className="absolute inset-y-0 right-2 flex items-center">
+              {searching ? (
+                <ClipLoader size={16} color="var(--color-primary, #000)" />
+              ) : (
+                !!query.trim() && (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    className="text-muted hover:text-base-fg text-sm"
+                    onClick={() => setQuery("")}
+                  >
+                    ✕
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+        </header>
+        <div className=" gap-2 w-full flex justify-end ">
+          <button
+            className="px-3 py-1 rounded bg-primary text-contrast sm:w-auto w-full"
+            onClick={() =>
+              setState((s) => ({ ...s, sectionModal: { mode: "create" } }))
+            }
+          >
+            New section
+          </button>
+        </div>
       </div>
       {drinksQ.isLoading && <div className="text-muted">Loading…</div>}
       {drinksQ.isError && (
@@ -397,194 +497,260 @@ export default function DashboardDrinks() {
 
       {!drinksQ.isLoading && !drinksQ.isError && (
         <div className="space-y-6">
-          {sections.map((sec) => (
-            <section
-              key={sec.id}
-              className="rounded-2xl border border-secondary/40 p-3"
-            >
-              <header className="flex items-center justify-between gap-2">
-                <div className="font-semibold text-base-fg">{sec.name}</div>
-                <div className="flex items-center gap-3">
-                  <button
-                    className="text-base-fg"
-                    onClick={() => moveSection(sec.id, "up")}
-                  >
-                    <FaArrowUp />
-                  </button>
-                  <button
-                    className=" text-base-fg"
-                    onClick={() => moveSection(sec.id, "down")}
-                  >
-                    <FaArrowDown />
-                  </button>
-                  <button
-                    className="px-2 py-1 rounded bg-secondary text-contrast"
-                    onClick={() =>
-                      setState((s) => ({
-                        ...s,
-                        sectionModal: { mode: "edit", data: sec },
-                      }))
-                    }
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-2 py-1 rounded bg-danger text-contrast"
-                    onClick={() =>
-                      setState((s) => ({
-                        ...s,
-                        confirm: {
-                          type: "section",
-                          id: sec.id,
-                          name: sec.name,
-                        },
-                      }))
-                    }
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="px-2 py-1 rounded bg-primary text-contrast"
-                    onClick={() =>
-                      setState((s) => ({
-                        ...s,
-                        groupModal: { mode: "create", section: sec },
-                      }))
-                    }
-                  >
-                    New group
-                  </button>
-                </div>
-              </header>
-              <div className="mt-2 space-y-3">
-                {(sec.groups || []).map((g) => (
-                  <div
-                    key={g.id}
-                    className="rounded-xl border border-secondary/30 p-2"
-                  >
-                    <div className="flex items-center justify-between gap-2 bg-primary px-3 py-1 rounded-md">
-                      <div className="font-medium flex items-center text-contrast gap-5">
-                        {g.name}
-
-                        <button
-                          className="text-contrast"
-                          onClick={() => moveGroup(sec.id, g.id, "up")}
-                        >
-                          <FaArrowUp />
-                        </button>
-                        <button
-                          className="text-contrast"
-                          onClick={() => moveGroup(sec.id, g.id, "down")}
-                        >
-                          <FaArrowDown />
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="px-2 py-1 rounded bg-secondary text-contrast"
-                          onClick={() =>
-                            setState((s) => ({
-                              ...s,
-                              groupModal: {
-                                mode: "edit",
-                                section: sec,
-                                data: g,
-                              },
-                            }))
-                          }
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="px-2 py-1 rounded bg-danger text-contrast"
-                          onClick={() =>
-                            setState((s) => ({
-                              ...s,
-                              confirm: {
-                                type: "group",
-                                id: g.id,
-                                name: g.name,
-                              },
-                            }))
-                          }
-                        >
-                          Delete
-                        </button>
-                        <button
-                          className="px-2 py-1 rounded underline text-contrast"
-                          onClick={() =>
-                            setState((s) => ({
-                              ...s,
-                              itemModal: { mode: "create", group: g },
-                            }))
-                          }
-                        >
-                          <p className="flex items-center gap-2">
-                            Add item
-                            <FaPlus />
-                          </p>
-                        </button>
-                      </div>
-                    </div>
-                    <ul className="mt-2 space-y-1 *:px-1 divide-y *:pb-1 divide-secondary  grid-cols-3 grid">
-                      {(g.items || []).map((it) => (
-                        <li
-                          key={it.id}
-                          className="flex items-center justify-between text-sm col-span-3"
-                        >
-                          <span className="font-medium">{it.name}</span>
-                          <div className="flex items-center gap-2 ml-3">
-                            <span className="text-muted text-right">
-                              {(it.amounts || [])
-                                .map(
-                                  (a) =>
-                                    `${a.size} $${Number(a.price).toFixed(2)}`
-                                )
-                                .join("  •  ")}
-                            </span>
-                            <button
-                              className="px-2 py-1 rounded bg-secondary text-contrast"
-                              onClick={() =>
-                                setState((s) => ({
-                                  ...s,
-                                  itemModal: {
-                                    mode: "edit",
-                                    group: g,
-                                    data: it,
-                                  },
-                                }))
-                              }
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="px-2 py-1 rounded bg-danger text-contrast"
-                              onClick={() =>
-                                setState((s) => ({
-                                  ...s,
-                                  confirm: {
-                                    type: "item",
-                                    id: it.id,
-                                    name: it.name,
-                                  },
-                                }))
-                              }
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </li>
-                      ))}
-                      {(g.items || []).length === 0 && (
-                        <li className="text-muted">No items in this group.</li>
-                      )}
-                    </ul>
+          {list.map((sec) => {
+            const isSectionCollapsed =
+              collapsedSections.has(sec.id) && !debouncedQuery;
+            return (
+              <section
+                key={sec.id}
+                className="rounded-2xl border border-secondary/40 p-3 "
+              >
+                <header className="flex items-center justify-between gap-2 flex-wrap px-3">
+                  <div className="font-semibold text-base-fg gap-4 flex items-center">
+                    <button
+                      className={`transition-transform ${
+                        isSectionCollapsed ? "-rotate-90" : "rotate-0"
+                      }`}
+                      onClick={() => toggleSection(sec.id)}
+                      aria-expanded={!isSectionCollapsed}
+                      aria-controls={`sec-${sec.id}`}
+                      title={
+                        isSectionCollapsed
+                          ? "Expand section"
+                          : "Collapse section"
+                      }
+                    >
+                      <FaChevronDown />
+                    </button>
+                    <span>{sec.name}</span>
+                    <button
+                      className="text-base-fg"
+                      onClick={() => moveSection(sec.id, "up")}
+                      title="Move up"
+                    >
+                      <FaArrowUp />
+                    </button>
+                    <button
+                      className=" text-base-fg"
+                      onClick={() => moveSection(sec.id, "down")}
+                      title="Move down"
+                    >
+                      <FaArrowDown />
+                    </button>
                   </div>
-                ))}
-              </div>
-            </section>
-          ))}
-          {sections.length === 0 && (
+                  <div className="flex items-center gap-3 md:w-auto w-full *:w-full">
+                    <button
+                      className="px-2 py-1 rounded bg-secondary text-contrast"
+                      onClick={() =>
+                        setState((s) => ({
+                          ...s,
+                          sectionModal: { mode: "edit", data: sec },
+                        }))
+                      }
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="px-2 py-1 rounded bg-danger text-contrast"
+                      onClick={() =>
+                        setState((s) => ({
+                          ...s,
+                          confirm: {
+                            type: "section",
+                            id: sec.id,
+                            name: sec.name,
+                          },
+                        }))
+                      }
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="px-2 py-1 rounded bg-primary text-contrast text-nowrap"
+                      onClick={() =>
+                        setState((s) => ({
+                          ...s,
+                          groupModal: { mode: "create", section: sec },
+                        }))
+                      }
+                    >
+                      New group
+                    </button>
+                  </div>
+                </header>
+                <div
+                  id={`sec-${sec.id}`}
+                  className={`mt-2 grid transition-all duration-300 ${
+                    isSectionCollapsed
+                      ? "grid-rows-[0fr] opacity-0"
+                      : "grid-rows-[1fr] opacity-100"
+                  }`}
+                >
+                  <div className="space-y-3 overflow-hidden">
+                    {(sec.groups || []).map((g) => {
+                      const isGroupCollapsed =
+                        collapsedGroups.has(g.id) && !debouncedQuery;
+                      return (
+                        <div
+                          key={g.id}
+                          className="rounded-xl border border-secondary/30 p-2 bg-secondary/10"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-secondary/20 rounded-md">
+                            <div className="font-medium flex items-center text-base-fg gap-4 text-nowrap ">
+                              <button
+                                className={`transition-transform ${
+                                  isGroupCollapsed ? "-rotate-90" : "rotate-0"
+                                }`}
+                                onClick={() => toggleGroup(g.id)}
+                                aria-expanded={!isGroupCollapsed}
+                                aria-controls={`grp-${g.id}`}
+                                title={
+                                  isGroupCollapsed
+                                    ? "Expand group"
+                                    : "Collapse group"
+                                }
+                              >
+                                <FaChevronDown />
+                              </button>
+                              <span>{g.name}</span>
+                              <button
+                                className="text-base-fg"
+                                onClick={() => moveGroup(sec.id, g.id, "up")}
+                                title="Move up"
+                              >
+                                <FaArrowUp />
+                              </button>
+                              <button
+                                className="text-base-fg"
+                                onClick={() => moveGroup(sec.id, g.id, "down")}
+                                title="Move down"
+                              >
+                                <FaArrowDown />
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-2 md:w-auto w-full *:w-full">
+                              <button
+                                className="px-2 py-1 rounded bg-secondary text-contrast"
+                                onClick={() =>
+                                  setState((s) => ({
+                                    ...s,
+                                    groupModal: {
+                                      mode: "edit",
+                                      section: sec,
+                                      data: g,
+                                    },
+                                  }))
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="px-2 py-1 rounded bg-danger text-contrast"
+                                onClick={() =>
+                                  setState((s) => ({
+                                    ...s,
+                                    confirm: {
+                                      type: "group",
+                                      id: g.id,
+                                      name: g.name,
+                                    },
+                                  }))
+                                }
+                              >
+                                Delete
+                              </button>
+                              <button
+                                className="px-2 py-1 rounded text-contrast bg-primary text-nowrap"
+                                onClick={() =>
+                                  setState((s) => ({
+                                    ...s,
+                                    itemModal: { mode: "create", group: g },
+                                  }))
+                                }
+                              >
+                                Add item
+                              </button>
+                            </div>
+                          </div>
+                          <div
+                            id={`grp-${g.id}`}
+                            className={`mt-2 grid transition-all duration-300 ${
+                              isGroupCollapsed
+                                ? "grid-rows-[0fr] opacity-0"
+                                : "grid-rows-[1fr] opacity-100"
+                            }`}
+                          >
+                            <div className="overflow-hidden">
+                              <ul className="space-y-3 *:px-1 divide-y *:pb-2 divide-secondary/40  grid-cols-3 grid">
+                                {(g.items || []).map((it) => (
+                                  <li
+                                    key={it.id}
+                                    className="flex items-center justify-between text-sm col-span-3"
+                                  >
+                                    <span className="font-medium line-clamp-1">
+                                      {it.name}
+                                    </span>
+                                    <div className="flex items-center gap-2 ml-3">
+                                      <span className="text-muted text-right">
+                                        {(it.amounts || [])
+                                          .map(
+                                            (a) =>
+                                              `${a.size} $${Number(
+                                                a.price
+                                              ).toFixed(2)}`
+                                          )
+                                          .join("  •  ")}
+                                      </span>
+                                      <button
+                                        className="px-2 py-1 rounded bg-secondary text-contrast"
+                                        onClick={() =>
+                                          setState((s) => ({
+                                            ...s,
+                                            itemModal: {
+                                              mode: "edit",
+                                              group: g,
+                                              data: it,
+                                            },
+                                          }))
+                                        }
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        className="px-2 py-1 rounded bg-danger text-contrast"
+                                        onClick={() =>
+                                          setState((s) => ({
+                                            ...s,
+                                            confirm: {
+                                              type: "item",
+                                              id: it.id,
+                                              name: it.name,
+                                            },
+                                          }))
+                                        }
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </li>
+                                ))}
+                                {(g.items || []).length === 0 && (
+                                  <li className="text-muted">
+                                    No items in this group.
+                                  </li>
+                                )}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );
+          })}
+          {list.length === 0 && (
             <div className="text-muted">No sections yet.</div>
           )}
         </div>
