@@ -90,6 +90,9 @@ export default function ItemPage() {
     });
   }
 
+  const imageUrl =
+    item?.image_url || item?.imageUrl || item?.image || item?.url || "";
+
   return (
     <div className="p-3 space-y-6 text-base-fg">
       <div className="flex items-center justify-between ">
@@ -126,6 +129,17 @@ export default function ItemPage() {
 
       {item && (
         <div className="space-y-4 ">
+          {imageUrl && (
+            <div className="w-full">
+              <img
+                src={imageUrl}
+                alt={item?.name || "Dish image"}
+                className="w-full h-auto max-h-92 rounded-2xl border border-secondary/40 object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-base-fg max-w-prose">{item.description}</p>
