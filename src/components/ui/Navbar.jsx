@@ -97,7 +97,7 @@ export default function Navbar({ items }) {
             <Logo className="h-8 w-auto block fill-current" aria-hidden />
             {location.pathname.includes("dashboard") ? (
               <span className="font-semibold text-nowrap">
-                Bisutoro Dashboard
+                Bisutoro <span className="text-base-fg">Dashboard</span>
               </span>
             ) : (
               <div className="flex flex-col">
