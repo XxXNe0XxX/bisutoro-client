@@ -17,6 +17,7 @@ function Stars({ value }) {
 export default function DashboardReviews() {
   const [selectedId, setSelectedId] = useState("");
   const [query, setQuery] = useState("");
+  const [itemSearch, setItemSearch] = useState("");
 
   const itemsQ = useQuery({
     queryKey: ["menu-items-all"],
@@ -33,6 +34,17 @@ export default function DashboardReviews() {
     () => (Array.isArray(itemsQ.data) ? itemsQ.data : []),
     [itemsQ.data]
   );
+
+  const filteredItems = useMemo(() => {
+    const s = (itemSearch || "").trim().toLowerCase();
+    if (!s) return items;
+    return items.filter((it) => {
+      const sel = String(it.id) === String(selectedId);
+      const name = (it.name || "").toLowerCase();
+      const desc = (it.description || "").toLowerCase();
+      return sel || name.includes(s) || desc.includes(s);
+    });
+  }, [items, itemSearch, selectedId]);
 
   const filtered = useMemo(() => {
     const list = reviewsQ.data?.reviews || [];
@@ -70,6 +82,42 @@ export default function DashboardReviews() {
         <label htmlFor="item" className="text-sm text-muted">
           Select item
         </label>
+        {/* Item search for mobile/long lists with suggestions */}
+        <div className="relative w-full md:w-64">
+          <input
+            type="text"
+            placeholder="Search items…"
+            value={itemSearch}
+            onChange={(e) => setItemSearch(e.target.value)}
+            className="w-full rounded-2xl p-3 border border-secondary/40 bg-background"
+          />
+          {itemSearch.trim() && (
+            <div className="absolute z-20 left-0 right-0 mt-1 max-h-64 overflow-y-auto rounded-xl border border-secondary/40 bg-background shadow">
+              {filteredItems.length > 0 ? (
+                <ul className="py-1">
+                  {filteredItems.slice(0, 30).map((it) => (
+                    <li key={it.id}>
+                      <button
+                        type="button"
+                        className="w-full text-left px-3 py-2 hover:bg-secondary/10"
+                        onClick={() => {
+                          setSelectedId(String(it.id));
+                          setItemSearch("");
+                        }}
+                      >
+                        {it.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="px-3 py-2 text-xs text-muted">
+                  No matching items
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         <select
           id="item"
           value={selectedId}
@@ -77,7 +125,7 @@ export default function DashboardReviews() {
           className="rounded-2xl p-3 border border-secondary/40 bg-background"
         >
           <option value="">— Choose an item —</option>
-          {items.map((it) => (
+          {filteredItems.map((it) => (
             <option key={it.id} value={it.id}>
               {it.name}
             </option>
