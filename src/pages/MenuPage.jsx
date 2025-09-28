@@ -327,8 +327,8 @@ export default function MenuPage() {
               prepared with care and inspired by authentic culinary traditions.
             </p>
           </div>
-          <ul className="md:w-auto w-full text-start  border border-secondary rounded-2xl p-3  text-sm md:text-nowrap space-y-1">
-            <div className="flex justify-center pb-2 gap-2 *:w-full *:h-full items-center">
+          <ul className="md:w-auto w-full text-start border border-secondary/40 rounded-2xl p-3  text-sm md:text-nowrap space-y-1">
+            <div className="flex flex-wrap justify-center pb-2 gap-2 *:w-full *:h-full items-center">
               {publicSettings.data?.show_omakase_section !== false && (
                 <Link
                   to="/omakase"
@@ -346,18 +346,20 @@ export default function MenuPage() {
               )}
               <ReservationButton></ReservationButton>
             </div>
-            <li className=" max-w-prose text-base-fg">
-              -- Gluten free dishes are marked with{" "}
-              <span className=" bg-warning p-1 rounded-2xl text-xs text-base-fg font-semibold">
-                GF
-              </span>
-            </li>
-            <li className=" max-w-prose text-base-fg">
-              -- Veggie options marked with{" "}
-              <span className=" bg-success p-1 rounded-2xl text-xs text-base-fg font-semibold">
-                VG
-              </span>
-            </li>
+            <div className="flex flex-col gap-2">
+              <li className=" max-w-prose text-base-fg">
+                <span className=" bg-warning p-1 rounded-2xl text-xs text-base-fg font-semibold">
+                  GF
+                </span>{" "}
+                Gluten free dishes
+              </li>
+              <li className=" max-w-prose text-base-fg">
+                <span className=" bg-success p-1 rounded-2xl text-xs text-base-fg font-semibold">
+                  VG
+                </span>{" "}
+                Veggie options
+              </li>
+            </div>
           </ul>
         </Motion.header>
       ) : (
@@ -396,7 +398,7 @@ export default function MenuPage() {
               <h1 className="text-primary text-lg font-semibold text-nowrap">
                 Filter by:{" "}
               </h1>
-              <div className="flex overflow-x-auto w-full  rounded-2xl gap-2 items-center justify-start shadow-inner border border-primary/40 md:p-1 h-12 overscroll-y-hidden">
+              <div className="flex overflow-x-auto w-full  rounded-2xl gap-2 items-center justify-start shadow-inner border border-secondary/40 md:p-1 h-12 overscroll-y-hidden">
                 <div className="flex items-center gap-2 ml-2 ">
                   <button
                     type="button"
@@ -616,12 +618,9 @@ export default function MenuPage() {
                           </span>
                         </div>
 
-                        <p className="text-xs text-muted">{item.description}</p>
-
                         {Array.isArray(item.ingredients) &&
                           item.ingredients.length > 0 && (
                             <p className="mt-1 text-xs text-muted">
-                              <span>Ingredients:</span>{" "}
                               {item.ingredients.join(" + ")}
                             </p>
                           )}
