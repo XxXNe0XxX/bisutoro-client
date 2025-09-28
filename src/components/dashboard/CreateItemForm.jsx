@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { IKContext, IKUpload } from "imagekitio-react";
+import ClipLoader from "react-spinners/ClipLoader";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { listCategories, request, getStoredToken } from "../../lib/api";
@@ -26,6 +27,14 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
   });
   const [submitted, setSubmitted] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [thumbLoading, setThumbLoading] = useState(false);
+
+  // When URL changes to a non-empty value, show preview spinner until it loads
+  useEffect(() => {
+    if (form.url) setThumbLoading(true);
+    else setThumbLoading(false);
+  }, [form.url]);
 
   const location = useLocation();
 
@@ -156,7 +165,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
           onSubmit={submit}
           className="grid grid-cols-1 md:grid-cols-6 gap-3"
         >
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <label className="text-sm text-muted">Name</label>
             <input
               required
@@ -201,7 +210,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
           </div>
 
           <div className="md:col-span-1">
-            <label className="text-sm text-muted">Pieces per order</label>
+            <label className="text-sm text-muted">Pieces</label>
             <input
               type="number"
               min={1}
@@ -224,7 +233,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
             )}
           </div>
 
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <label className="text-sm text-muted">Category</label>
             <select
               value={form.category}
@@ -254,13 +263,13 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
             )}
           </div>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-3">
             <label className="text-sm text-muted">Ingredients</label>
             <div className="flex gap-2">
               <input
                 value={ingredientInput}
                 onChange={(e) => setIngredientInput(e.target.value)}
-                className="flex-1 rounded-2xl p-1 px-2 border border-secondary/40 bg-background text-base-fg max-w-full"
+                className="flex-1 rounded-2xl p-1 px-2 border border-secondary/40 bg-background text-base-fg md:max-w-44"
                 placeholder="Add an ingredient "
               />
               <button
@@ -296,7 +305,7 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
           </div>
 
           {/* Image upload (ImageKit) + manual URL fallback */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-3">
             <label className="text-sm text-muted">Image (optional)</label>
             <div className="space-y-2">
               {/* Manual URL input (always available) */}
@@ -310,6 +319,13 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                 }
                 className="w-full rounded-2xl p-1 px-2 border border-secondary/40 bg-background text-base-fg"
               />
+              {/* Uploading spinner */}
+              {uploading && (
+                <div className="flex items-center gap-2 text-sm text-muted">
+                  <ClipLoader size={18} color="var(--color-primary, #000)" />
+                  <span>Uploading image…</span>
+                </div>
+              )}
 
               {/* ImageKit uploader if configured via env */}
               {(() => {
@@ -372,23 +388,25 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                         /\s+/g,
                         "-"
                       )}
-                      onSuccess={(res) =>
-                        setForm((f) => ({ ...f, url: res?.url || "" }))
-                      }
+                      onUploadStart={() => setUploading(true)}
+                      onSuccess={(res) => {
+                        setUploading(false);
+                        setForm((f) => ({ ...f, url: res?.url || "" }));
+                      }}
                       onError={(err) => {
                         console.error("Image upload failed", err);
-                        // Lightweight inline message; avoid toasts for now
                         alert(
                           (err && (err.message || err.response?.message)) ||
                             "Upload failed"
                         );
+                        setUploading(false);
                       }}
                       validateFile={(file) => {
                         const maxSize = 5 * 1024 * 1024; // 5MB
                         if (file.size > maxSize) return false;
                         return /^image\//.test(file.type);
                       }}
-                      className="px-3 py-2 rounded bg-secondary text-contrast"
+                      className="px-3 py-2 rounded bg-secondary text-contrast w-full"
                     />
                     <div className="text-xs text-muted mt-1">
                       Uploads are stored via ImageKit. Max 5MB. Images are
@@ -407,11 +425,22 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                     className="h-24 w-24 object-cover rounded-xl border border-secondary/40"
                     loading="lazy"
                     decoding="async"
+                    onLoad={() => setThumbLoading(false)}
+                    onError={() => setThumbLoading(false)}
                   />
+                  {thumbLoading && (
+                    <div className="flex items-center gap-2 text-sm text-muted">
+                      <ClipLoader
+                        size={18}
+                        color="var(--color-primary, #000)"
+                      />
+                      <span>Loading preview…</span>
+                    </div>
+                  )}
                   <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, url: "" }))}
-                    className="px-3 py-2 rounded bg-secondary text-contrast"
+                    className="px-3 py-2 rounded bg-danger text-contrast"
                   >
                     Remove image
                   </button>
@@ -485,10 +514,10 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
             </label>
           </div>
 
-          <div className="md:col-span-1 flex items-end justify-end">
+          <div className="md:col-span-6 flex items-end justify-end">
             <button
               type="submit"
-              disabled={isPending || !canSubmit}
+              disabled={isPending || !canSubmit || uploading || thumbLoading}
               className="px-4 py-2 rounded bg-primary text-contrast disabled:opacity-30"
             >
               {isPending ? "Creating…" : "Create"}
