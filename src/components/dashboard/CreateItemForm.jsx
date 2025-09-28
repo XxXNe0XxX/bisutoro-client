@@ -401,6 +401,8 @@ export default function CreateItemForm({ onCreate, isPending, error }) {
                         );
                         setUploading(false);
                       }}
+                      accept="image/*"
+                      capture="environment"
                       validateFile={(file) => {
                         const maxSize = 5 * 1024 * 1024; // 5MB
                         if (file.size > maxSize) return false;
