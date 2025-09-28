@@ -92,7 +92,7 @@ export default function ItemPage() {
 
   return (
     <div className="p-3 space-y-6 text-base-fg">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
         <h1 className="text-2xl font-semibold flex items-center gap-2">
           {item?.name || "Item"}
           <div className="flex gap-2">
@@ -112,7 +112,7 @@ export default function ItemPage() {
             )}
           </div>
         </h1>
-        <Link className="text-sm text-primary underline" to={"/menu"}>
+        <Link className="text-sm text-end text-primary underline" to={"/menu"}>
           Back to menu
         </Link>
       </div>
@@ -128,11 +128,11 @@ export default function ItemPage() {
         <div className="space-y-4 ">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-muted max-w-prose">{item.description}</p>
+              <p className="text-base-fg max-w-prose">{item.description}</p>
               {Array.isArray(item.ingredients) &&
                 item.ingredients.length > 0 && (
                   <p className="text-sm text-muted">
-                    Ingredients: {item.ingredients.join(" + ")}
+                    {item.ingredients.join(" + ")}
                   </p>
                 )}
             </div>
