@@ -37,7 +37,7 @@ export default function RootLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-background ">
+    <div className="min-h-screen bg-linear-to-b from-background to-gray-100 dark:to-gray-500 to-400% bg-fixed  ">
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
       <Navbar items={isDashboard ? dashboardNav : siteNav} />
       <div className="md:pl-64 ">

@@ -39,7 +39,7 @@ export default function Navbar({ items }) {
     <>
       {/* Mobile top bar */}
       <header className="md:hidden sticky top-0 z-40 shadow-xs shadow-gray-500 bg-background ">
-        <div className="flex items-center justify-between h-14 px-3">
+        <div className="flex items-center justify-between h-14 px-3 ">
           <div className="flex items-center gap-2 text-primary">
             <Logo className="h-8 w-auto block fill-current" aria-hidden />
             {location.pathname.includes("dashboard") ? (
@@ -129,7 +129,7 @@ export default function Navbar({ items }) {
                 className={({ isActive }) =>
                   `block px-3 py-2 transition-all mask-r-from-0% border border-transparent  ${
                     isActive
-                      ? "bg-primary text-contrast tracking-widest font-bold"
+                      ? "bg-primary text-contrast tracking-wider font-semibold"
                       : "text-base-fg"
                   }`
                 }
