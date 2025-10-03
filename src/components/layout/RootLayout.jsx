@@ -37,7 +37,7 @@ export default function RootLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-background bg-[url('octopus.webp')] bg-blend-soft-light  ">
+    <div className="min-h-screen bg-background bg-[url('/octopus.webp')] bg-blend-soft-light  ">
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
       {/* <div className="absolute bg-background bg-center bg-[url('octopus.webp')] bg-blend-overlay bg-cover  bg-no-repeat inset-0  bg-fixed blur-xs z-0"></div> */}
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
