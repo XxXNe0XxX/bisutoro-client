@@ -140,7 +140,7 @@ export default function Navbar({ items }) {
             </div>
           ))}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-secondary/40 flex flex-col gap-2">
+        <div className="absolute bottom-0 left-0 right-0 p-3 border-t bg-background border-secondary/40 flex flex-col gap-2">
           {location.pathname.includes("dashboard") && (
             <div className="flex items-center justify-between">
               <div className="min-w-0  ">
