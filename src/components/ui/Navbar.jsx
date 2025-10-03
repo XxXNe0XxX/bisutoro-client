@@ -118,7 +118,7 @@ export default function Navbar({ items }) {
             </svg>
           </button>
         </div>
-        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-56px-56px)] bg-[url('light-waves.jpeg')] dark:bg-[url('dark-waves.jpeg')] bg-background/80 bg-cover bg-center bg-blend-soft-light backdrop-grayscale">
+        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-56px-56px)] bg-[url('light-waves.jpeg')] dark:bg-[url('dark-waves.jpeg')] bg-background/80 bg-cover bg-center bg-blend-soft-light ">
           {navItems.map((item) => (
             <div
               key={item.to}
