@@ -37,12 +37,13 @@ export default function RootLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-background to-gray-100 dark:to-gray-500 to-400% bg-fixed  ">
+    <div className="relative min-h-screen   ">
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
+      <div className="absolute bg-background bg-center bg-[url('octopus.webp')] bg-blend-overlay backdrop-blur-lg bg-cover  bg-no-repeat inset-0  bg-fixed blur-xs"></div>
       <Navbar items={isDashboard ? dashboardNav : siteNav} />
-      <div className="md:pl-64 ">
+      <div className="md:pl-64  ">
         {/* Mobile top-bar height spacer */}
-        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden ">
+        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden  ">
           <div className="h-0 md:h-14" />
 
           <Outlet />

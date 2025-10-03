@@ -89,7 +89,7 @@ export default function Navbar({ items }) {
         className={`fixed z-50 md:z-30 top-0 left-0 h-full w-64 bg-background border-r border-secondary/40 transform transition-transform duration-200 ease-out
         ${
           open ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:block`}
+        } md:translate-x-0 md:block `}
         aria-label="Sidebar navigation"
       >
         <div className="h-14 px-3 flex items-center justify-between border-b border-secondary/40 ">
@@ -118,11 +118,11 @@ export default function Navbar({ items }) {
             </svg>
           </button>
         </div>
-        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-56px-56px)]">
+        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-56px-56px)] bg-[url('light-waves.jpeg')] dark:bg-[url('dark-waves.jpeg')] bg-background/80 bg-cover bg-center bg-blend-soft-light backdrop-grayscale">
           {navItems.map((item) => (
             <div
               key={item.to}
-              className="border-[2px] transition-colors hover:border-secondary/40 overflow-hidden border-background rounded-2xl "
+              className="border-[2px] transition-colors hover:border-secondary/40 overflow-hidden border-background rounded-2xl bg-background "
             >
               <NavLink
                 to={item.to}
