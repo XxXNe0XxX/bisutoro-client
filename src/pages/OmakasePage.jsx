@@ -89,7 +89,7 @@ export default function OmakasePage() {
         </Motion.p>
         <Motion.div
           variants={item}
-          className="flex flex-wrap gap-4 pt-2 items-center"
+          className="flex flex-wrap gap-4 py-2 mb-12 items-center"
         >
           <Motion.div
             whileHover={{ y: -1, scale: 1.02 }}

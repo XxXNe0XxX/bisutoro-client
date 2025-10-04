@@ -118,16 +118,16 @@ export default function Navbar({ items }) {
             </svg>
           </button>
         </div>
-        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-56px-56px)] bg-[url('/light-waves.jpeg')]  bg-background/80 bg-cover bg-center bg-blend-soft-light ">
+        <nav className="p-3 space-y-2 overflow-y-auto h-[calc(100%-56px-56px)] bg-[url('/light-waves.jpeg')]  bg-background/80 bg-cover bg-center bg-blend-soft-light mask-r-from-90% mask-b-from-60% ">
           {navItems.map((item) => (
             <div
               key={item.to}
-              className="border-[2px] transition-colors hover:border-secondary/40 overflow-hidden border-background rounded-2xl bg-background "
+              className="border-[2px] transition-colors hover:border-secondary/40 overflow-hidden border-background rounded-2xl bg-background    "
             >
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `block px-3 py-2 transition-all mask-r-from-0% border border-transparent  ${
+                  `block px-3 py-1.5 transition-all mask-r-from-0% border border-transparent  ${
                     isActive
                       ? "bg-primary text-contrast tracking-wider font-semibold"
                       : "text-base-fg"

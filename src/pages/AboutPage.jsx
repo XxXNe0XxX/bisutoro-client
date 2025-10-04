@@ -58,7 +58,7 @@ export default function AboutPage() {
         initial="hidden"
         animate="show"
         variants={item}
-        className="rounded-t-2xl border border-background overflow-hidden"
+        className="rounded-t-2xl overflow-hidden"
       >
         <img
           height={100}

@@ -37,18 +37,18 @@ export default function RootLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-background bg-[url('/octopus.webp')] bg-blend-soft-light  ">
+    <div className="relative min-h-screen bg-background bg-[url('/octopus-double.webp')]  bg-blend-soft-light  ">
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
-      {/* <div className="absolute bg-background bg-center bg-[url('octopus.webp')] bg-blend-overlay bg-cover  bg-no-repeat inset-0  bg-fixed blur-xs z-0"></div> */}
+      {/* <div className="absolute inset-0 z-0 "></div> */}
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
-      <div className="md:pl-64 z-20  ">
+      <div className="md:pl-64 ">
         {/* Mobile top-bar height spacer */}
-        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden  ">
+        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden  backdrop-blur-[3px] bg-background/30 ">
           <div className="h-0 md:h-14" />
 
           <Outlet />
         </main>
-        <footer className="py-2 text-sm opacity-30 text-center text-base-fg">
+        <footer className="py-2 text-sm text-center text-muted bg-background">
           <p>
             &copy; {new Date().getFullYear()} Bisutoro. All rights reserved.
           </p>
