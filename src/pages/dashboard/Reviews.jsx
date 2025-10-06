@@ -83,7 +83,7 @@ export default function DashboardReviews() {
           Select item
         </label>
         {/* Item search for mobile/long lists with suggestions */}
-        <div className="relative w-full md:w-64">
+        <div className="relative w-full md:w-64 z-20">
           <input
             type="text"
             placeholder="Search items…"
@@ -151,7 +151,7 @@ export default function DashboardReviews() {
       )}
 
       {selectedId && !reviewsQ.isLoading && !reviewsQ.isError && (
-        <div className="space-y-2">
+        <div className="space-y-2 !backdrop-blur-none">
           <div className="text-sm text-muted flex items-center justify-between">
             <span>
               Total: {reviewsQ.data?.summary?.count ?? 0}, Avg:{" "}
@@ -162,7 +162,7 @@ export default function DashboardReviews() {
               {(reviewsQ.data?.reviews || []).length}
             </span>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-2 ">
             {filtered.map((r) => (
               <li
                 key={r.id}
@@ -184,7 +184,7 @@ export default function DashboardReviews() {
               </li>
             ))}
             {filtered.length === 0 && (
-              <li className="text-sm text-muted">No reviews for this item.</li>
+              <li className="text-sm text-muted ">No reviews for this item.</li>
             )}
           </ul>
         </div>
