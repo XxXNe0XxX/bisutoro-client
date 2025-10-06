@@ -151,16 +151,62 @@ export default function ItemPage() {
                 )}
             </div>
             <div className="text-right">
-              <span className="font-semibold text-2xl tabular-nums flex flex-row-reverse items-center gap-2">
-                ${item.price}
-                {Number.isFinite(Number(item.pieces_per_order)) &&
-                  Number(item.pieces_per_order) > 0 && (
-                    <Quantity>
-                      {Number(item.pieces_per_order)}{" "}
-                      {item.pieces_per_order > 1 ? "pcs" : "pc"}
-                    </Quantity>
+              <div className="flex flex-col items-end gap-1">
+                <div className="flex items-center gap-2">
+                  {item.base_price != null &&
+                  Number(item.base_price) !== Number(item.price) ? (
+                    <>
+                      <del className="text-muted tabular-nums">
+                        ${Number(item.base_price).toFixed(2)}
+                      </del>
+                      <span className="font-semibold text-2xl tabular-nums text-primary">
+                        ${Number(item.price).toFixed(2)}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-2xl bg-success text-base-fg">
+                        Promo
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-semibold text-2xl tabular-nums">
+                      ${Number(item.price).toFixed(2)}
+                    </span>
                   )}
-              </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const baseQty =
+                      item.base_pieces_per_order ?? item.pieces_per_order;
+                    const curQty = item.pieces_per_order;
+                    if (
+                      baseQty != null &&
+                      Number(baseQty) > 0 &&
+                      Number(curQty) > 0 &&
+                      Number(baseQty) !== Number(curQty)
+                    ) {
+                      return (
+                        <div className="flex items-center gap-2">
+                          <Quantity>
+                            {Number(baseQty)}{" "}
+                            {Number(baseQty) > 1 ? "pcs" : "pc"}
+                          </Quantity>
+                          <span className="text-muted">→</span>
+                          <Quantity>
+                            {Number(curQty)} {Number(curQty) > 1 ? "pcs" : "pc"}
+                          </Quantity>
+                        </div>
+                      );
+                    }
+                    if (Number(curQty) > 0) {
+                      return (
+                        <Quantity>
+                          {Number(curQty)} {Number(curQty) > 1 ? "pcs" : "pc"}
+                        </Quantity>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              </div>
               <div className="text-sm text-muted">{item.category}</div>
             </div>
           </div>

@@ -10,6 +10,9 @@ function groupEvents(events) {
   const upcoming = [];
   const past = [];
   for (const ev of events || []) {
+    // Only include events explicitly marked active
+    const isActive = ev?.is_active === true || ev?.is_active === 1;
+    if (!isActive) continue;
     const start = new Date(ev.starts_at).getTime();
     const end = new Date(ev.ends_at).getTime();
     if (isNaN(start) || isNaN(end)) continue;
@@ -34,13 +37,17 @@ function EventCard({ ev }) {
       to={`/events/${ev.id}`}
       className="rounded-2xl border border-secondary/40 overflow-hidden bg-background/60 w-full block hover:border-primary/60 transition-colors"
     >
-      {ev.image_url && (
+      {ev.image_url ? (
         <img
           src={ev.image_url}
           alt={ev.title}
           loading="lazy"
           className="w-full min-h-48  object-contain"
         />
+      ) : (
+        <div className="w-full min-h-48 flex items-center justify-center">
+          No Image to display{" "}
+        </div>
       )}
     </Link>
   );
@@ -84,7 +91,7 @@ export default function EventsPage() {
               <h2 className="text-xl tracking-wider bg-primary text-contrast px-2 rounded-ee-2xl uppercase font-bold inline-flex items-center">
                 Current
               </h2>
-              <div className=" w-full">
+              <div className=" w-full flex flex-col gap-4">
                 {groups.current.map((ev) => (
                   <EventCard key={ev.id} ev={ev} />
                 ))}
@@ -96,7 +103,7 @@ export default function EventsPage() {
               <h2 className="text-xl tracking-wider bg-text text-contrast px-2 rounded-ee-2xl uppercase font-bold inline-flex items-center">
                 Upcoming
               </h2>
-              <div className=" w-full">
+              <div className=" w-full flex flex-col gap-4">
                 {groups.upcoming.map((ev) => (
                   <EventCard key={ev.id} ev={ev} />
                 ))}
@@ -108,7 +115,7 @@ export default function EventsPage() {
               <h2 className="text-xl tracking-wider bg-secondary text-contrast px-2 rounded-ee-2xl uppercase font-bold inline-flex items-center">
                 Past
               </h2>
-              <div className="w-full">
+              <div className="w-full flex flex-col gap-4">
                 {groups.past.map((ev) => (
                   <EventCard key={ev.id} ev={ev} />
                 ))}

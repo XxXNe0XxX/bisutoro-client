@@ -193,12 +193,15 @@ export const ServerMenuItemShape = {
   name: "string",
   description: "string",
   price: "number",
+  base_price: "number|undefined",
   category: "string",
   is_available: "boolean",
   ingredients: "array|string|undefined",
   vegan: "boolean|number|undefined",
   gluten_free: "boolean|number|undefined",
   pieces_per_order: "number|undefined",
+  base_pieces_per_order: "number|undefined",
+  active_override: "object|boolean|undefined",
   created_at: "string",
   updated_at: "string",
 };
@@ -218,11 +221,19 @@ export function normalizeMenu(items) {
       name: it.name ?? "Untitled",
       description: it.description ?? "",
       price: typeof it.price === "number" ? it.price : Number(it.price) || 0,
+      base_price:
+        it.base_price != null
+          ? typeof it.base_price === "number"
+            ? it.base_price
+            : Number(it.base_price) || undefined
+          : undefined,
       ingredients: normalizeIngredients(it.ingredients),
       // pass through dietary flags if present on server
       vegan: it.vegan === true || it.vegan === 1,
       gluten_free: it.gluten_free === true || it.gluten_free === 1,
       pieces_per_order: toPositiveInt(it.pieces_per_order),
+      base_pieces_per_order: toPositiveInt(it.base_pieces_per_order),
+      active_override: it.active_override || null,
       reviews: it.reviews || null,
     };
     if (!grouped.has(cat)) grouped.set(cat, []);

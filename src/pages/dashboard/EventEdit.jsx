@@ -1,8 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
-  listAllEvents,
-  createEvent,
+  getEventPublic,
+  updateEvent,
   deleteEvent,
   request,
   getStoredToken,
@@ -12,14 +13,12 @@ import {
   deleteEventOverride,
 } from "../../lib/api";
 import imageCompression from "browser-image-compression";
-import Modal from "../../components/ui/Modal";
 import ClipLoader from "react-spinners/ClipLoader";
-import { Link, useNavigate } from "react-router-dom";
+import Modal from "../../components/ui/Modal";
 
 function toLocalInputValue(s) {
   if (!s) return "";
   try {
-    // If string lacks 'T', replace first space with 'T' to help Date parse consistently
     const normalized = typeof s === "string" ? s.replace(" ", "T") : s;
     const d = new Date(normalized);
     if (isNaN(d.getTime())) return "";
@@ -51,6 +50,23 @@ function EventForm({ initial, onSubmit, submitting }) {
   useEffect(() => {
     setThumbLoading(Boolean(form.image_url));
   }, [form.image_url]);
+
+  useEffect(() => {
+    // update form when initial changes (after fetch)
+    if (initial) {
+      setForm({
+        title: initial?.title || "",
+        description: initial?.description || "",
+        starts_at: initial?.starts_at
+          ? toLocalInputValue(initial.starts_at)
+          : "",
+        ends_at: initial?.ends_at ? toLocalInputValue(initial.ends_at) : "",
+        image_url: initial?.image_url || "",
+        priority: initial?.priority ?? 100,
+        is_active: initial?.is_active ?? true,
+      });
+    }
+  }, [initial]);
 
   const errors = useMemo(() => {
     const errs = {};
@@ -155,7 +171,7 @@ function EventForm({ initial, onSubmit, submitting }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3 ">
+    <form onSubmit={submit} className="space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <label className="space-y-1">
           <span className="text-sm text-muted">Title</span>
@@ -241,7 +257,7 @@ function EventForm({ initial, onSubmit, submitting }) {
               type="file"
               accept="image/*"
               capture="environment"
-              className="text-contrast bg-secondary rounded-md p-2 w-full"
+              className="bg-secondary p-2 rounded-md w-full text-contrast"
               onChange={handleFilePick}
               disabled={!enabledUpload || uploading}
             />
@@ -278,7 +294,7 @@ function EventForm({ initial, onSubmit, submitting }) {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 disabled:opacity-60"
+          className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 disabled:opacity-60 bg-primary text-contrast"
         >
           {submitting ? "Saving…" : "Save"}
         </button>
@@ -287,135 +303,13 @@ function EventForm({ initial, onSubmit, submitting }) {
   );
 }
 
-export default function DashboardEvents() {
-  const qc = useQueryClient();
-  const nav = useNavigate();
-  const eventsQ = useQuery({
-    queryKey: ["events-all"],
-    queryFn: listAllEvents,
-  });
-
-  const createMut = useMutation({
-    mutationFn: createEvent,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events-all"] });
-    },
-  });
-  const deleteMut = useMutation({
-    mutationFn: (id) => deleteEvent(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events-all"] }),
-  });
-
-  const [open, setOpen] = useState(false);
-
-  function openCreate() {
-    setOpen(true);
-  }
-
-  async function handleSubmit(data) {
-    try {
-      const created = await createMut.mutateAsync(data);
-      if (created && created.id != null) {
-        setOpen(false);
-        nav(`/dashboard/events/${created.id}/edit`);
-      }
-    } catch (e) {
-      // keep modal open so user can fix validation issues
-      console.error("Failed to create event", e);
-    }
-  }
-
-  return (
-    <div className="p-3 space-y-3 text-base-fg">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Events</h1>
-        <button
-          onClick={openCreate}
-          className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 bg-primary text-contrast"
-        >
-          New Event
-        </button>
-      </div>
-      {eventsQ.isLoading && <div className="text-muted">Loading…</div>}
-      {eventsQ.isError && (
-        <div className="text-danger">
-          Failed to load: {String(eventsQ.error?.message || "")}
-        </div>
-      )}
-      {Array.isArray(eventsQ.data) && eventsQ.data.length === 0 && (
-        <div className="text-muted">No events yet.</div>
-      )}
-      <ul className="space-y-2">
-        {(eventsQ.data || []).map((ev) => (
-          <li
-            key={ev.id}
-            className="rounded-md border border-secondary/40 bg-background p-3 flex flex-wrap gap-3 items-center overflow-hidden"
-          >
-            {ev.image_url ? (
-              <img
-                src={ev.image_url}
-                alt=""
-                className="w-auto h-auto md:max-h-64 sm:max-h-32 object-cover rounded"
-              />
-            ) : (
-              <div className="w-20 h-16 bg-secondary/20 rounded" />
-            )}
-            <div className="flex-1 ">
-              <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-semibold truncate">{ev.title}</h3>
-                {ev.is_active ? (
-                  <span className="text-xs px-2  text-contrast rounded bg-success text-base-fg">
-                    Active
-                  </span>
-                ) : (
-                  <span className="text-xs px-2 text-base-fg py-1 rounded bg-secondary/30">
-                    Inactive
-                  </span>
-                )}
-              </div>
-              <div className="text-xs text-muted truncate">
-                {new Date(ev.starts_at).toLocaleString().slice(0, 9)} →{" "}
-                {new Date(ev.ends_at).toLocaleString().slice(0, 9)}
-              </div>
-              <div className="text-sm line-clamp-2">{ev.description}</div>
-            </div>
-            <div className="flex gap-2">
-              <Link
-                to={`/dashboard/events/${ev.id}/edit`}
-                className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 bg-secondary text-contrast"
-              >
-                Edit
-              </Link>
-              <button
-                onClick={() => {
-                  if (confirm("Delete this event?")) deleteMut.mutate(ev.id);
-                }}
-                className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20  bg-danger text-contrast"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <Modal open={open} onClose={() => setOpen(false)} title="New event">
-        <div className="space-y-4 max-h-[80dvh] overflow-y-auto overflow-x-hidden">
-          <EventForm
-            initial={null}
-            onSubmit={handleSubmit}
-            submitting={createMut.isPending}
-          />
-        </div>
-      </Modal>
-    </div>
-  );
-}
-
 function OverridesEditor({ eventId }) {
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successText, setSuccessText] = useState("");
+  const nav = useNavigate();
 
   const itemsQ = useQuery({
     queryKey: ["menu-items-for-overrides"],
@@ -433,12 +327,16 @@ function OverridesEditor({ eventId }) {
       upsertEventOverride(eventId, itemId, payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["event-overrides", eventId] });
+      setSuccessText("Override saved");
+      setSuccessOpen(true);
     },
   });
   const deleteMut = useMutation({
     mutationFn: (itemId) => deleteEventOverride(eventId, itemId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["event-overrides", eventId] });
+      setSuccessText("Override removed");
+      setSuccessOpen(true);
     },
   });
 
@@ -453,7 +351,10 @@ function OverridesEditor({ eventId }) {
   const overridesMap = useMemo(() => {
     const m = new Map();
     for (const ov of overrides) {
-      if (ov && ov.item_id != null) m.set(ov.item_id, ov);
+      if (ov && ov.menu_item_id != null) {
+        const key = Number(ov.menu_item_id);
+        if (Number.isFinite(key)) m.set(key, ov);
+      }
     }
     return m;
   }, [overrides]);
@@ -469,12 +370,13 @@ function OverridesEditor({ eventId }) {
   }, [items, query]);
 
   const selectedItem = useMemo(
-    () => items.find((it) => it.id === selectedId) || null,
+    () => items.find((it) => Number(it.id) === Number(selectedId)) || null,
     [items, selectedId]
   );
 
-  // Local edit state for the selected item
-  const selOverride = selectedItem ? overridesMap.get(selectedItem.id) : null;
+  const selOverride = selectedItem
+    ? overridesMap.get(Number(selectedItem.id)) || null
+    : null;
   const [priceOverride, setPriceOverride] = useState("");
   const [priceDelta, setPriceDelta] = useState("");
   const [piecesOverride, setPiecesOverride] = useState("");
@@ -533,7 +435,7 @@ function OverridesEditor({ eventId }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">Overrides</h2>
         <div className="text-xs text-muted">
           Manage per-item promo pricing/quantities for this event
@@ -557,14 +459,22 @@ function OverridesEditor({ eventId }) {
           ) : (
             <ul className="max-h-64 overflow-auto rounded-md border border-secondary/40 divide-y">
               {filtered.map((it) => {
-                const has = overridesMap.has(it.id);
+                const ov = overridesMap.get(Number(it.id));
+                const has = !!(
+                  ov &&
+                  (ov.price_override != null ||
+                    ov.price_delta != null ||
+                    ov.pieces_per_order_override != null)
+                );
                 return (
                   <li
                     key={it.id}
                     className={`p-2 flex items-center justify-between cursor-pointer hover:bg-secondary/10 ${
-                      selectedId === it.id ? "bg-secondary/20" : ""
+                      Number(selectedId) === Number(it.id)
+                        ? "bg-secondary/20"
+                        : ""
                     }`}
-                    onClick={() => setSelectedId(it.id)}
+                    onClick={() => setSelectedId(Number(it.id))}
                   >
                     <div className="min-w-0">
                       <div className="font-medium truncate">{it.name}</div>
@@ -576,7 +486,7 @@ function OverridesEditor({ eventId }) {
                       </div>
                     </div>
                     {has ? (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/15 text-accent flex-shrink-0">
+                      <span className="text-[10px] px-1.5 py-0.5 text-primary rounded bg-accent/15 text-accent flex-shrink-0">
                         Has override
                       </span>
                     ) : (
@@ -599,11 +509,23 @@ function OverridesEditor({ eventId }) {
               <div className="font-semibold">{selectedItem.name}</div>
               <div className="text-xs text-muted">
                 Base: ${selectedItem.base_price ?? selectedItem.price}
-                {Number(selectedItem.pieces_per_order) > 0 && (
+                {Number(
+                  selectedItem.base_pieces_per_order ??
+                    selectedItem.pieces_per_order
+                ) > 0 && (
                   <>
                     {" "}
-                    · {selectedItem.pieces_per_order}{" "}
-                    {selectedItem.pieces_per_order > 1 ? "pcs" : "pc"}
+                    ·{" "}
+                    {Number(
+                      selectedItem.base_pieces_per_order ??
+                        selectedItem.pieces_per_order
+                    )}{" "}
+                    {Number(
+                      selectedItem.base_pieces_per_order ??
+                        selectedItem.pieces_per_order
+                    ) > 1
+                      ? "pcs"
+                      : "pc"}
                   </>
                 )}
               </div>
@@ -670,7 +592,7 @@ function OverridesEditor({ eventId }) {
                 <button
                   onClick={handleSave}
                   disabled={upsertMut.isPending}
-                  className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20"
+                  className="px-3 py-1 rounded-md border text-contrast bg-primary border-secondary/40 hover:bg-secondary/20"
                 >
                   {upsertMut.isPending ? "Saving…" : "Save override"}
                 </button>
@@ -690,7 +612,123 @@ function OverridesEditor({ eventId }) {
             </div>
           )}
         </div>
+        <Modal
+          open={successOpen}
+          onClose={() => setSuccessOpen(false)}
+          title="Success"
+        >
+          <div className="p-2 space-y-3">
+            <div>{successText || "Saved successfully."}</div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setSuccessOpen(false)}
+                className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => nav("/dashboard/events")}
+                className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 bg-primary text-contrast"
+              >
+                Back to Events
+              </button>
+            </div>
+          </div>
+        </Modal>
       </div>
+    </div>
+  );
+}
+
+export default function DashboardEventEdit() {
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successText, setSuccessText] = useState("");
+  const { id } = useParams();
+  const nav = useNavigate();
+  const qc = useQueryClient();
+
+  const evQ = useQuery({
+    queryKey: ["event-public", id],
+    queryFn: () => getEventPublic(id),
+    enabled: !!id,
+  });
+
+  const updateMut = useMutation({
+    mutationFn: (patch) => updateEvent(id, patch),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["events-all"] });
+      qc.invalidateQueries({ queryKey: ["event-public", id] });
+      setSuccessText("Event saved");
+      setSuccessOpen(true);
+    },
+  });
+  const deleteMut = useMutation({
+    mutationFn: () => deleteEvent(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["events-all"] });
+      nav("/dashboard/events");
+    },
+  });
+
+  return (
+    <div className="p-3 space-y-4 text-base-fg">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-semibold">Edit Event</h1>
+        </div>
+        <button
+          onClick={() => {
+            if (confirm("Delete this event?")) deleteMut.mutate();
+          }}
+          className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 bg-danger text-contrast"
+        >
+          {deleteMut.isPending ? "Deleting…" : "Delete"}
+        </button>
+      </div>
+      <Link
+        to="/dashboard/events"
+        className="text-sm underline flex justify-end w-full "
+      >
+        ← Back to Events
+      </Link>
+
+      {evQ.isLoading && <div className="text-muted">Loading…</div>}
+      {evQ.isError && <div className="text-danger">Failed to load event</div>}
+      {evQ.data && (
+        <div className="space-y-6">
+          <EventForm
+            initial={evQ.data}
+            onSubmit={(patch) => updateMut.mutate(patch)}
+            submitting={updateMut.isPending}
+          />
+          <div className="border-t border-secondary/40 pt-3">
+            <OverridesEditor eventId={id} />
+          </div>
+        </div>
+      )}
+      <Modal
+        open={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        title="Success"
+      >
+        <div className="p-2 space-y-3">
+          <div>{successText || "Saved successfully."}</div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setSuccessOpen(false)}
+              className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => nav("/dashboard/events")}
+              className="px-3 py-1 rounded-md border border-secondary/40 hover:bg-secondary/20 bg-primary text-contrast"
+            >
+              Back to Events
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

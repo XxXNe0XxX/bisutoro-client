@@ -20,6 +20,7 @@ import OmakasePage from "./pages/OmakasePage";
 import DrinksPage from "./pages/DrinksPage";
 import DashboardDrinks from "./pages/dashboard/Drinks";
 import DashboardEvents from "./pages/dashboard/Events";
+import DashboardEventEdit from "./pages/dashboard/EventEdit";
 import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
 
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="statistics" element={<DashboardStatistics />} />
             <Route path="drinks" element={<DashboardDrinks />} />
             <Route path="events" element={<DashboardEvents />} />
+            <Route path="events/:id/edit" element={<DashboardEventEdit />} />
             <Route path="categories" element={<DashboardCategories />} />
             <Route path="reviews" element={<DashboardReviews />} />
             <Route path="hours" element={<DashboardHours />} />

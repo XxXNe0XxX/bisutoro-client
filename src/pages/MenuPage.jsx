@@ -10,7 +10,7 @@ import {
 } from "../lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa6";
+import { FaArrowRight, FaTag } from "react-icons/fa6";
 import ReservationButton from "../components/ui/ReservationButton";
 import { motion as Motion } from "motion/react";
 import { animate, inView } from "motion";
@@ -540,14 +540,73 @@ export default function MenuPage() {
                             </div>
                             <div className="text-right flex-shrink-0">
                               <span className="font-semibold tabular-nums flex flex-row-reverse items-center gap-2">
-                                ${item.price}
+                                <span className="flex items-center gap-1">
+                                  {item.active_override ? (
+                                    <>
+                                      {Number.isFinite(
+                                        Number(item.base_price)
+                                      ) &&
+                                      Number(item.base_price) !==
+                                        Number(item.price) ? (
+                                        <span className="text-muted line-through tabular-nums">
+                                          ${""}
+                                          {item.base_price}
+                                        </span>
+                                      ) : null}
+                                      <span className="tabular-nums">
+                                        ${item.price}
+                                      </span>
+                                      <div className="min-h-10 overflow-hidden flex items-center">
+                                        <Link to={"/events"}>
+                                          <span className="text-[10px] bg-primary-soft rounded bg-accent/15 text-accent text-center px-1 flex items-center gap-1 -rotate-45">
+                                            Event
+                                            <br></br>
+                                            <FaTag></FaTag>
+                                          </span>
+                                        </Link>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <span className="tabular-nums">
+                                      ${item.price}
+                                    </span>
+                                  )}
+                                </span>
                                 {Number.isFinite(
                                   Number(item.pieces_per_order)
                                 ) &&
                                   Number(item.pieces_per_order) > 0 && (
                                     <Quantity>
-                                      {Number(item.pieces_per_order)}{" "}
-                                      {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                                      {item.active_override &&
+                                      Number.isFinite(
+                                        Number(item.base_pieces_per_order)
+                                      ) &&
+                                      Number(item.base_pieces_per_order) !==
+                                        Number(item.pieces_per_order) ? (
+                                        <>
+                                          <span className="text-muted line-through">
+                                            {Number(item.base_pieces_per_order)}{" "}
+                                            {Number(
+                                              item.base_pieces_per_order
+                                            ) > 1
+                                              ? "pcs"
+                                              : "pc"}
+                                          </span>
+                                          <span>
+                                            {Number(item.pieces_per_order)}{" "}
+                                            {item.pieces_per_order > 1
+                                              ? "pcs"
+                                              : "pc"}
+                                          </span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          {Number(item.pieces_per_order)}{" "}
+                                          {item.pieces_per_order > 1
+                                            ? "pcs"
+                                            : "pc"}
+                                        </>
+                                      )}
                                     </Quantity>
                                   )}
                               </span>
@@ -627,12 +686,63 @@ export default function MenuPage() {
                       </Link>
                       <div className="text-right">
                         <span className="font-semibold tabular-nums flex flex-row-reverse items-center gap-2">
-                          ${item.price}
+                          <span className="flex items-center gap-1">
+                            {item.active_override ? (
+                              <>
+                                {Number.isFinite(Number(item.base_price)) &&
+                                Number(item.base_price) !==
+                                  Number(item.price) ? (
+                                  <span className="text-muted line-through tabular-nums">
+                                    ${""}
+                                    {item.base_price}
+                                  </span>
+                                ) : null}
+                                <span className="tabular-nums">
+                                  ${item.price}
+                                </span>
+                                <div className="min-h-10 overflow-hidden flex items-center">
+                                  <Link to={"/events"}>
+                                    <span className="text-[10px] bg-primary-soft rounded bg-accent/15 text-accent text-center px-1 flex items-center gap-1 -rotate-45">
+                                      Event
+                                      <br></br>
+                                      <FaTag></FaTag>
+                                    </span>
+                                  </Link>
+                                </div>
+                              </>
+                            ) : (
+                              <span className="tabular-nums">
+                                ${item.price}
+                              </span>
+                            )}
+                          </span>
                           {Number.isFinite(Number(item.pieces_per_order)) &&
                             Number(item.pieces_per_order) > 0 && (
                               <Quantity>
-                                {Number(item.pieces_per_order)}{" "}
-                                {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                                {item.active_override &&
+                                Number.isFinite(
+                                  Number(item.base_pieces_per_order)
+                                ) &&
+                                Number(item.base_pieces_per_order) !==
+                                  Number(item.pieces_per_order) ? (
+                                  <div className="flex gap-1">
+                                    <span className="text-muted line-through">
+                                      {Number(item.base_pieces_per_order)}{" "}
+                                      {Number(item.base_pieces_per_order) > 1
+                                        ? "pcs"
+                                        : "pc"}
+                                    </span>
+                                    <span>
+                                      {Number(item.pieces_per_order)}{" "}
+                                      {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <>
+                                    {Number(item.pieces_per_order)}{" "}
+                                    {item.pieces_per_order > 1 ? "pcs" : "pc"}
+                                  </>
+                                )}
                               </Quantity>
                             )}
                         </span>
