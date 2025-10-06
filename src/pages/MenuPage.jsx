@@ -277,12 +277,12 @@ export default function MenuPage() {
   );
 
   return (
-    <div className="space-y-6 relative  ">
+    <div className="*:pt-6 relative   ">
       <Motion.div
         initial={{ y: -12, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary/40 w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-30"
+        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary/40 w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-30 !pt-0"
       >
         <FaSearchengin className="w-auto h-6" />
         <div className="relative w-full">
@@ -318,7 +318,7 @@ export default function MenuPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.05 }}
-          className=" px-3 md:pt-4 pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  "
+          className=" px-3 md:!pt-4 !pt-16 w-full flex items-start gap-2 md:flex-nowrap flex-wrap  "
         >
           <div className="w-full">
             <h1 className="text-3xl text-primary font-bold mb-2 ">Menu</h1>
@@ -327,7 +327,7 @@ export default function MenuPage() {
               prepared with care and inspired by authentic culinary traditions.
             </p>
           </div>
-          <ul className="md:w-auto w-full text-start border border-secondary/40 rounded-2xl p-3  text-sm md:text-nowrap space-y-1">
+          <ul className="md:w-auto w-full text-start border border-secondary/40 rounded-2xl p-3  text-sm md:text-nowrap space-y-1 ">
             <div className="flex flex-wrap justify-center pb-2 gap-2 *:w-full *:h-full items-center">
               {publicSettings.data?.show_omakase_section !== false && (
                 <Link
@@ -398,7 +398,7 @@ export default function MenuPage() {
               <h1 className="text-primary text-lg font-semibold text-nowrap">
                 Filter by:{" "}
               </h1>
-              <div className="flex overflow-x-auto w-full  rounded-2xl gap-2 items-center justify-start shadow-inner border border-secondary/40 md:p-1 h-12 overscroll-y-hidden">
+              <div className="flex overflow-x-auto w-full  rounded-2xl gap-2 items-center justify-start shadow-inner border border-secondary/40 md:p-1 h-12 overflow-y-hidden">
                 <div className="flex items-center gap-2 ml-2 ">
                   <button
                     type="button"

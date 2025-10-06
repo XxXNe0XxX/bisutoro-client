@@ -59,13 +59,13 @@ export default function DrinksPage() {
   }, [sections, debouncedQuery]);
 
   return (
-    <div className="space-y-6 text-base-fg relative">
+    <div className="*:pt-6 text-base-fg relative">
       {/* Fixed search bar (same style as MenuPage) */}
       <Motion.div
         initial={{ y: -12, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary/40 w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-30"
+        className="flex text-base-fg items-center max-w-[960px] gap-3 fixed shadow px-3 bg-background/40 border-b md:border-x border-secondary/40 w-full h-14 xl:rounded-b-2xl mx-auto md:top-0 backdrop-blur-2xl opacity-100 z-30 !pt-0"
       >
         <FaSearchengin className="w-auto h-6" />
         <div className="relative w-full">
@@ -141,7 +141,7 @@ export default function DrinksPage() {
                     <h3 className="text-lg font-semibold tracking-tighter text-contrast bg-primary px-3 rounded-se-2xl">
                       {g.name}
                     </h3>
-                    <ul className="space-y-2 divide-y-[1px] divide-secondary *:pb-1">
+                    <ul className="space-y-2 divide-y-[1px] divide-secondary/40 *:pb-1">
                       {(g.items || []).map((it) => (
                         <li
                           key={it.id}
