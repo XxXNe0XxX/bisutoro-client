@@ -231,10 +231,21 @@ export default function MenuPage() {
     }));
     // Always hide empty categories
     const baseNonEmpty = base.filter((cat) => (cat.items || []).length > 0);
-    // If a category is selected, limit to it
-    const scoped = activeCategory
-      ? baseNonEmpty.filter((c) => c.name === activeCategory)
-      : baseNonEmpty;
+
+    // Handle Promos pseudo-category: aggregate items with active overrides
+    let scoped;
+    if (activeCategory === "Promos") {
+      const promoItems = base
+        .flatMap((c) => c.items || [])
+        .filter((it) => !!it.active_override);
+      scoped = promoItems.length ? [{ name: "Promos", items: promoItems }] : [];
+    } else {
+      // If a real category is selected, limit to it
+      scoped = activeCategory
+        ? baseNonEmpty.filter((c) => c.name === activeCategory)
+        : baseNonEmpty;
+    }
+
     if (!debouncedQuery) return scoped;
     const q = debouncedQuery.toLowerCase();
     return scoped
@@ -252,8 +263,10 @@ export default function MenuPage() {
   }, [sortedCategories, debouncedQuery, activeCategory, filterVegan, filterGF]);
 
   // Build category buttons: include categories that have items (post dietary filters)
+  // Also inject a "Promos" pseudo-category when there are items with active overrides
   const categoryButtons = useMemo(() => {
-    const list = sortedCategories.map((cat) => {
+    // First compute items per category after dietary filters
+    const withItems = sortedCategories.map((cat) => {
       const itemsAfterDiet = (cat.items || []).filter((it) => {
         const vegan =
           it.vegan === true || it.vegan === 1 || String(it.vegan) === "1";
@@ -265,9 +278,28 @@ export default function MenuPage() {
         if (filterGF && !gf) return false;
         return true;
       });
-      return { name: cat.name, count: itemsAfterDiet.length };
+      return { name: cat.name, itemsAfterDiet };
     });
-    return list.filter((c) => c.count > 0);
+
+    // Compute count of promo items (with active overrides)
+    const promoCount = withItems.reduce((acc, c) => {
+      const n = (c.itemsAfterDiet || []).filter(
+        (it) => !!it.active_override
+      ).length;
+      return acc + n;
+    }, 0);
+
+    // Build the visible category list with counts
+    const list = withItems
+      .map((c) => ({ name: c.name, count: (c.itemsAfterDiet || []).length }))
+      .filter((c) => c.count > 0);
+
+    // Inject Promos at the beginning for visibility if any exist
+    if (promoCount > 0) {
+      list.unshift({ name: "Promos", count: promoCount });
+    }
+
+    return list;
   }, [sortedCategories, filterVegan, filterGF]);
 
   // Determine whether non-dietary filters are active (search or category)
@@ -449,10 +481,10 @@ export default function MenuPage() {
                       activeCategory === c.name
                         ? "bg-primary text-contrast border-primary"
                         : "border-secondary/40 hover:bg-secondary/20 "
-                    }`}
+                    }  flex items-center gap-1`}
                     aria-pressed={activeCategory === c.name}
                   >
-                    {c.name}
+                    {c.name} {c.name === "Promos" && <FaTag></FaTag>}
                   </button>
                 ))}
 
