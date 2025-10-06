@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export default function Modal({ open, onClose, title, children, actions }) {
   useEffect(() => {
@@ -11,13 +12,13 @@ export default function Modal({ open, onClose, title, children, actions }) {
   }, [open, onClose]);
 
   if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center ">
+  const node = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-xs"
         onClick={onClose}
       />
-      <div className="relative w-[min(95vw,640px)] rounded-2xl border border-secondary/40 bg-background shadow-xl p-4 ">
+      <div className="relative w-[min(95vw,640px)] rounded-2xl border border-secondary/40 bg-background shadow-xl p-4">
         {title && (
           <h3 className="text-lg font-semibold text-base-fg mb-3">{title}</h3>
         )}
@@ -30,4 +31,9 @@ export default function Modal({ open, onClose, title, children, actions }) {
       </div>
     </div>
   );
+  // Render into body to avoid clipping/stacking from parents
+  if (typeof document !== "undefined" && document.body) {
+    return createPortal(node, document.body);
+  }
+  return node;
 }
