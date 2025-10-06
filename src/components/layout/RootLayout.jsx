@@ -18,6 +18,7 @@ export default function RootLayout() {
   const siteNav = [
     { to: "/menu", label: "Menu" },
     { to: "/drinks", label: "Drinks" },
+    { to: "/events", label: "Events" },
     // Only include Omakase when explicitly enabled; avoids flash on load
     ...(publicSettings.data?.show_omakase_section === true
       ? [{ to: "/omakase", label: "Omakase" }]
@@ -27,6 +28,7 @@ export default function RootLayout() {
   const dashboardNav = [
     { to: "/dashboard", label: "Overview", end: true },
     { to: "/dashboard/drinks", label: "Drinks" },
+    { to: "/dashboard/events", label: "Events" },
     { to: "/dashboard/items", label: "Items" },
     { to: "/dashboard/categories", label: "Categories" },
     { to: "/dashboard/daily", label: "Daily Specials" },

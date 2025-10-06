@@ -601,3 +601,60 @@ export async function getExternalTopClicked({ from, to, limit = 10 } = {}) {
   );
   return res?.data || res;
 }
+
+// ---- Events (public) ----
+export async function getActiveEvents() {
+  // Returns array of currently active events (time window + is_active)
+  return await request(`/api/events`);
+}
+
+export async function getAllEventsPublic() {
+  // Returns array of all events without admin auth
+  return await request(`/api/events/all-public`);
+}
+
+export async function getEventPublic(id) {
+  return await request(`/api/events/${id}`);
+}
+
+// ---- Events (admin) ----
+export async function listAllEvents() {
+  return await request(`/api/events/all`);
+}
+
+export async function createEvent(payload) {
+  // Expect shape: { title, description, starts_at, ends_at, image_url?, priority?, is_active? }
+  return await request(`/api/events`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateEvent(id, payload) {
+  return await request(`/api/events/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteEvent(id) {
+  return await request(`/api/events/${id}`, { method: "DELETE" });
+}
+
+// ---- Event overrides (admin) ----
+export async function listEventOverrides(eventId) {
+  return await request(`/api/events/${eventId}/overrides`);
+}
+
+export async function upsertEventOverride(eventId, itemId, payload) {
+  return await request(`/api/events/${eventId}/overrides/${itemId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteEventOverride(eventId, itemId) {
+  return await request(`/api/events/${eventId}/overrides/${itemId}`, {
+    method: "DELETE",
+  });
+}

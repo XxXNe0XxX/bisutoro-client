@@ -326,9 +326,23 @@ export default function MenuPage() {
               Dive in our selection of traditionally crafted recipes, each
               prepared with care and inspired by authentic culinary traditions.
             </p>
+            <div className="flex flex-col gap-2 pt-4 pb-1 text-sm">
+              <p className=" max-w-prose text-base-fg">
+                <span className=" bg-warning p-1 rounded-2xl text-xs text-base-fg font-semibold">
+                  GF
+                </span>{" "}
+                Gluten free dishes
+              </p>
+              <p className=" max-w-prose text-base-fg">
+                <span className=" bg-success p-1 rounded-2xl text-xs text-base-fg font-semibold">
+                  VG
+                </span>{" "}
+                Veggie options
+              </p>
+            </div>
           </div>
-          <ul className="md:w-auto w-full text-start border border-secondary/40 rounded-2xl p-3  text-sm md:text-nowrap space-y-1 ">
-            <div className="flex flex-wrap justify-center pb-2 gap-2 *:w-full *:h-full items-center">
+          <ul className="md:w-auto w-full text-start rounded-2xl pt-3  text-sm md:text-nowrap space-y-1 ">
+            <div className="flex flex-wrap justify-center gap-2 *:w-full *:h-full items-center">
               {publicSettings.data?.show_omakase_section !== false && (
                 <Link
                   to="/omakase"
@@ -345,20 +359,6 @@ export default function MenuPage() {
                 </Link>
               )}
               <ReservationButton></ReservationButton>
-            </div>
-            <div className="flex flex-col gap-2">
-              <li className=" max-w-prose text-base-fg">
-                <span className=" bg-warning p-1 rounded-2xl text-xs text-base-fg font-semibold">
-                  GF
-                </span>{" "}
-                Gluten free dishes
-              </li>
-              <li className=" max-w-prose text-base-fg">
-                <span className=" bg-success p-1 rounded-2xl text-xs text-base-fg font-semibold">
-                  VG
-                </span>{" "}
-                Veggie options
-              </li>
             </div>
           </ul>
         </Motion.header>
@@ -393,7 +393,7 @@ export default function MenuPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease: "easeOut", delay: 0.06 }}
-              className="px-3 flex flex-col items-start gap-2"
+              className="px-3 flex flex-col items-start gap-2 pb-1"
             >
               <h1 className="text-primary text-lg font-semibold text-nowrap">
                 Filter by:{" "}

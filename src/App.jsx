@@ -19,6 +19,9 @@ import ItemPage from "./pages/ItemPage";
 import OmakasePage from "./pages/OmakasePage";
 import DrinksPage from "./pages/DrinksPage";
 import DashboardDrinks from "./pages/dashboard/Drinks";
+import DashboardEvents from "./pages/dashboard/Events";
+import EventsPage from "./pages/EventsPage";
+import EventDetailPage from "./pages/EventDetailPage";
 
 export default function App() {
   return (
@@ -28,6 +31,8 @@ export default function App() {
         <Route path="menu" element={<MenuPage />} />
         <Route path="menu/:id" element={<ItemPage />} />
         <Route path="drinks" element={<DrinksPage />} />
+        <Route path="events" element={<EventsPage />} />
+        <Route path="events/:id" element={<EventDetailPage />} />
         <Route path="omakase" element={<OmakasePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="login" element={<LoginPage />} />
@@ -40,6 +45,7 @@ export default function App() {
             <Route path="daily" element={<DashboardDaily />} />
             <Route path="statistics" element={<DashboardStatistics />} />
             <Route path="drinks" element={<DashboardDrinks />} />
+            <Route path="events" element={<DashboardEvents />} />
             <Route path="categories" element={<DashboardCategories />} />
             <Route path="reviews" element={<DashboardReviews />} />
             <Route path="hours" element={<DashboardHours />} />

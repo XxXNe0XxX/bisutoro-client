@@ -100,7 +100,7 @@ export default function DrinksPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="max-w-[960px] mx-auto pt-16 md:pt-0 px-3"
+          className="max-w-[960px] mx-auto !pt-16 md:!pt-0 px-3"
         >
           <h1 className="text-3xl text-primary font-bold mb-2 md:pt-4">
             Drinks
