@@ -102,60 +102,99 @@ export default function DashboardDrinks() {
     groupModal: null, // { mode, section, data? }
     itemModal: null, // { mode, group, data? }
     confirm: null, // { type: 'section'|'group'|'item', id, name }
+    success: null, // { message }
   });
 
   function refresh() {
     qc.invalidateQueries({ queryKey: ["drinks"] });
   }
 
+  // Helper to show success modal
+  function showSuccess(message) {
+    setState((s) => ({ ...s, success: { message } }));
+  }
+
   // Mutations - Sections
   const createSecMut = useMutation({
     mutationFn: createDrinksSection,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Section created.");
+    },
   });
   const updateSecMut = useMutation({
     mutationFn: ({ id, patch }) => updateDrinksSection(id, patch),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Section saved.");
+    },
   });
   const deleteSecMut = useMutation({
     mutationFn: deleteDrinksSection,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Section deleted.");
+    },
   });
   const reorderSecsMut = useMutation({
     mutationFn: reorderDrinksSections,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Sections reordered.");
+    },
   });
 
   // Mutations - Groups
   const createGrpMut = useMutation({
     mutationFn: createDrinksGroup,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Group created.");
+    },
   });
   const updateGrpMut = useMutation({
     mutationFn: ({ id, patch }) => updateDrinksGroup(id, patch),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Group saved.");
+    },
   });
   const deleteGrpMut = useMutation({
     mutationFn: deleteDrinksGroup,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Group deleted.");
+    },
   });
   const reorderGrpsMut = useMutation({
     mutationFn: ({ sectionId, order }) => reorderDrinksGroups(sectionId, order),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Groups reordered.");
+    },
   });
 
   // Mutations - Items
   const createItemMut = useMutation({
     mutationFn: createDrinksItem,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Item created.");
+    },
   });
   const updateItemMut = useMutation({
     mutationFn: ({ id, patch }) => updateDrinksItem(id, patch),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Item saved.");
+    },
   });
   const deleteItemMut = useMutation({
     mutationFn: deleteDrinksItem,
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      showSuccess("Item deleted.");
+    },
   });
 
   // Helpers
@@ -818,6 +857,26 @@ export default function DashboardDrinks() {
           setState((s) => ({ ...s, confirm: null }));
         }}
       />
+
+      {/* Success feedback */}
+      <Modal
+        open={!!state.success}
+        onClose={() => setState((s) => ({ ...s, success: null }))}
+        title="Success"
+      >
+        <div className="space-y-4">
+          <p>{state.success?.message || "Changes saved."}</p>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setState((s) => ({ ...s, success: null }))}
+              className="px-3 py-1 rounded bg-primary text-contrast"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

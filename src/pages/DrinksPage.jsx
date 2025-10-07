@@ -33,29 +33,35 @@ export default function DrinksPage() {
 
   const filteredSections = useMemo(() => {
     const q = (debouncedQuery || "").toLowerCase();
-    if (!q) return sections;
-    return sections
-      .map((sec) => ({
-        ...sec,
-        groups: (sec.groups || [])
-          .map((g) => ({
-            ...g,
-            items: (g.items || []).filter((it) => {
-              const name = (it.name || "").toLowerCase();
-              const origin = (it.origin || "").toLowerCase();
-              const ingredients = Array.isArray(it.ingredients)
-                ? it.ingredients.join(" ").toLowerCase()
-                : "";
-              return (
-                name.includes(q) ||
-                origin.includes(q) ||
-                (ingredients && ingredients.includes(q))
-              );
-            }),
-          }))
-          .filter((g) => (g.items || []).length > 0),
-      }))
-      .filter((sec) => (sec.groups || []).length > 0);
+    return (
+      (sections || [])
+        .map((sec) => ({
+          ...sec,
+          groups: (sec.groups || [])
+            .map((g) => {
+              const baseItems = Array.isArray(g.items) ? g.items : [];
+              const items = q
+                ? baseItems.filter((it) => {
+                    const name = (it.name || "").toLowerCase();
+                    const origin = (it.origin || "").toLowerCase();
+                    const ingredients = Array.isArray(it.ingredients)
+                      ? it.ingredients.join(" ").toLowerCase()
+                      : "";
+                    return (
+                      name.includes(q) ||
+                      origin.includes(q) ||
+                      (ingredients && ingredients.includes(q))
+                    );
+                  })
+                : baseItems;
+              return { ...g, items };
+            })
+            // Always hide empty groups
+            .filter((g) => (g.items || []).length > 0),
+        }))
+        // Always hide sections without groups
+        .filter((sec) => (sec.groups || []).length > 0)
+    );
   }, [sections, debouncedQuery]);
 
   return (
