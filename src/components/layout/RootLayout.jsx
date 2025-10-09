@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicAppSettings } from "../../lib/api";
 import Navbar from "../ui/Navbar";
-import { motion as Motion } from "motion/react";
 
 export default function RootLayout() {
   const location = useLocation();
@@ -45,7 +44,7 @@ export default function RootLayout() {
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
       <div className="md:pl-64 ">
         {/* Mobile top-bar height spacer */}
-        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden  bg-background/30 *:*:backdrop-blur-sm  ">
+        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden  bg-background/30 *:*:backdrop-blur-[2px]  ">
           <div className="h-0 md:h-14" />
 
           <Outlet />
