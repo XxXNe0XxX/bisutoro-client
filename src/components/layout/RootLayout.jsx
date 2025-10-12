@@ -52,8 +52,8 @@ export default function RootLayout() {
 
           <Outlet />
         </main>
-        <footer className="py-2 text-sm text-center text-muted bg-background">
-          <p>
+        <footer className="py-3 text-sm border-t border-secondary/40 text-center text-muted bg-background backdrop-blur-3xl mix-blend-luminosity z-20">
+          <p className="">
             &copy; {new Date().getFullYear()} Bisutoro. All rights reserved.
           </p>
         </footer>
