@@ -1,5 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  FaArrowUpRightFromSquare,
+  FaGoogle,
+  FaLocationPin,
+} from "react-icons/fa6";
 import Quantity from "../components/ui/Quantity";
 import {
   getMenuItem,
@@ -224,12 +229,30 @@ export default function ItemPage() {
               </div>
             )}
 
-            <div>
+            <div className="flex gap-2 flex-wrap text-nowrap">
+              <button
+                onClick={() => {
+                  window.open(
+                    `https://search.google.com/local/writereview?placeid=${
+                      import.meta.env.VITE_GOOGLE_PLACE_ID
+                    }`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  );
+                }}
+                className="px-4 py-2 rounded flex justify-between items-center gap-3 sm:w-fit w-full bg-primary text-contrast font-semibold"
+              >
+                <span className="flex gap-3">
+                  <FaGoogle className="h-5 w-5" /> Leave a Google Review{" "}
+                </span>
+                <FaArrowUpRightFromSquare />
+              </button>
               <button
                 onClick={() => setReviewOpen(true)}
-                className="px-4 py-2 rounded bg-primary text-contrast font-semibold"
+                className="px-4 py-2 rounded flex items-center gap-3 sm:w-fit w-full  bg-primary text-contrast font-semibold"
               >
-                Leave a review
+                <FaLocationPin className="h-5 w-5"></FaLocationPin> Leave a
+                review on site
               </button>
             </div>
           </>
