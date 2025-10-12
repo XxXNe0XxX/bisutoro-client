@@ -41,7 +41,7 @@ export default function RootLayout() {
     <div className=" min-h-screen  bg-[url('/octopus-double.webp')]   ">
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
       <div
-        class="fixed inset-0 bg-background h-full mix-blend-hard-light
+        className="fixed inset-0 bg-background h-full mix-blend-hard-light
        pointer-events-none"
       ></div>
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
