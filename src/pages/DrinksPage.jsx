@@ -200,7 +200,14 @@ export default function DrinksPage() {
       {!isLoading && !isError && (
         <div className="max-w-[960px] mx-auto space-y-8 px-3">
           {filteredSections.map((sec) => (
-            <section key={sec.id} className="space-y-4">
+            <Motion.section
+              key={sec.id}
+              className="space-y-4"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ amount: 0.2, once: false }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+            >
               <h2 className="text-xl font-bold uppercase tracking-wider bg-text text-contrast px-3 rounded-ee-2xl">
                 {sec.name}
               </h2>
@@ -250,7 +257,7 @@ export default function DrinksPage() {
                   </div>
                 ))}
               </div>
-            </section>
+            </Motion.section>
           ))}
           {!debouncedQuery && sections.length === 0 && (
             <div className="text-muted">No drinks to show yet.</div>

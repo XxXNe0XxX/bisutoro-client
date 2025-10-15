@@ -47,14 +47,14 @@ export default function RootLayout() {
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
       <div className="md:pl-64 ">
         {/* Mobile top-bar height spacer */}
-        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh] overflow-hidden  bg-background/30 *:*:backdrop-blur-[2px]  ">
+        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh]  bg-background/30 *:*:backdrop-blur-[2px]  ">
           <div className="h-0 md:h-14" />
 
           <Outlet />
         </main>
       </div>
-      <div className="md:pl-64 backdrop-blur-3xl">
-        <footer className="py-3  w-full text-sm border-t border-secondary/40 text-center text-muted bg-background">
+      <div className="md:pl-64">
+        <footer className="py-3  backdrop-blur-3xl  w-full text-sm border-t border-secondary/40 text-center text-muted bg-background">
           <p className="">
             &copy; {new Date().getFullYear()} Bisutoro. All rights reserved.
           </p>
