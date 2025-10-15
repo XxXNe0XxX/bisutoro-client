@@ -43,7 +43,7 @@ export default function RootLayout() {
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
       <div className="md:pl-64 ">
         {/* Mobile top-bar height spacer */}
-        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94dvh] min-h-[90dvh]  bg-background/30 *:*:backdrop-blur-[2px]  ">
+        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94vh] min-h-[90vh]  bg-background/30 *:*:backdrop-blur-[2px]  ">
           <div
             className="fixed inset-0 bg-background h-full mix-blend-hard-light
        pointer-events-none z-0 "
