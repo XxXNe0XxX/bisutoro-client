@@ -42,7 +42,7 @@ export default function RootLayout() {
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
       <div
         className="fixed inset-0 bg-background h-full mix-blend-hard-light
-       pointer-events-none"
+       pointer-events-none z-0"
       ></div>
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
       <div className="md:pl-64 ">
@@ -52,7 +52,9 @@ export default function RootLayout() {
 
           <Outlet />
         </main>
-        <footer className="py-3 text-sm border-t border-secondary/40 text-center text-muted bg-background backdrop-blur-3xl mix-blend-luminosity z-20">
+      </div>
+      <div className="md:pl-64">
+        <footer className="py-3  w-full text-sm border-t border-secondary/40 text-center text-muted bg-background backdrop-blur-3xl mix-blend-luminosity z-20">
           <p className="">
             &copy; {new Date().getFullYear()} Bisutoro. All rights reserved.
           </p>
