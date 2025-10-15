@@ -2,8 +2,71 @@ import { useQuery } from "@tanstack/react-query";
 import { getDrinksMenu } from "../lib/api";
 import { motion as Motion } from "motion/react";
 import { FaSearchengin } from "react-icons/fa6";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { ClipLoader } from "react-spinners";
+import { animate, inView } from "motion";
+
+function InViewReveal({
+  as = "li",
+  className,
+  children,
+  y = 20,
+  delay = 0,
+  threshold = 0.25,
+  once = false,
+  ...rest
+}) {
+  const ref = useRef(null);
+  const Tag = as;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Respect reduced motion preferences
+    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (mql?.matches) {
+      el.style.opacity = 1;
+      el.style.transform = "none";
+      return;
+    }
+
+    // Set initial state for enter animation
+    el.style.opacity = 0;
+    el.style.transform = `translateY(${y}px)`;
+
+    const stop = inView(
+      el,
+      () => {
+        // Enter
+        animate(
+          el,
+          {
+            opacity: [0, 1],
+            transform: [`translateY(${y}px)`, "translateY(0px)"],
+          },
+          { duration: 0.5, delay, easing: "ease-out" }
+        );
+        // Return a callback for when it leaves the viewport
+        return () => {
+          animate(
+            el,
+            { opacity: 0, transform: `translateY(${Math.max(0, y * 0.3)}px)` },
+            { duration: 0.35, easing: "ease-in" }
+          );
+        };
+      },
+      { amount: threshold, once }
+    );
+    return () => stop?.();
+  }, [y, delay, threshold, once]);
+
+  return (
+    <Tag ref={ref} className={className} {...rest}>
+      {children}
+    </Tag>
+  );
+}
 export default function DrinksPage() {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["drinks"],
@@ -149,7 +212,8 @@ export default function DrinksPage() {
                     </h3>
                     <ul className="space-y-2 divide-y-[1px] divide-secondary/40 *:pb-1">
                       {(g.items || []).map((it) => (
-                        <li
+                        <InViewReveal
+                          as="li"
                           key={it.id}
                           className="flex items-start justify-between gap-3"
                         >
@@ -180,7 +244,7 @@ export default function DrinksPage() {
                               </div>
                             ))}
                           </div>
-                        </li>
+                        </InViewReveal>
                       ))}
                     </ul>
                   </div>
