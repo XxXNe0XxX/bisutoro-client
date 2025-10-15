@@ -39,27 +39,28 @@ export default function RootLayout() {
 
   return (
     <div className=" min-h-screen  bg-[url('/octopus-double.webp')]   ">
+      <div
+        className="fixed inset-0 bg-background mix-blend-hard-light
+       pointer-events-none z-0 "
+      ></div>
       {/* Sidebar/Drawer Navbar is positioned fixed; reserve space on md+ */}
       <Navbar items={isDashboard ? dashboardNav : siteNav} className="z-20" />
-      <div className="md:pl-64 relative ">
+      <div className="md:pl-64  ">
         {/* Mobile top-bar height spacer */}
-        <div
-          className="absolute inset-0 bg-background h-full mix-blend-hard-light
-       pointer-events-none z-0 "
-        ></div>
-        <main className="max-w-[960px] mx-auto pb-3 h-full md:min-h-[94vh] min-h-[90vh]  bg-background/30 *:*:backdrop-blur-[2px] ">
+
+        <main className="max-w-[960px] mx-auto pb-3 md:min-h-[94vh] min-h-[90vh]  bg-background/30 *:*:backdrop-blur-[2px] ">
           <div className="h-0 md:h-14" />
 
           <Outlet />
         </main>
       </div>
-      <div className="md:pl-64 z-20 ">
+      {/* <div className="md:pl-64 z-20 ">
         <footer className="py-3 w-full text-sm border-t border-secondary/40 text-center text-muted bg-background">
           <p className="">
             &copy; {new Date().getFullYear()} Bisutoro. All rights reserved.
           </p>
         </footer>
-      </div>
+      </div> */}
     </div>
   );
 }
