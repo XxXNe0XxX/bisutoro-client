@@ -373,25 +373,24 @@ export default function MenuPage() {
               </p>
             </div>
           </div>
-          <ul className="md:w-auto w-full text-start rounded-2xl pt-3  text-sm md:text-nowrap space-y-1 ">
-            <div className="flex flex-wrap justify-center gap-2 *:w-full *:h-full items-center">
+          <ul className="md:w-auto w-full text-start rounded-2xl  text-sm md:text-nowrap space-y-2 ">
+            <li className="flex flex-wrap justify-center gap-2 *:w-full *:h-full items-center">
               {publicSettings.data?.show_omakase_section !== false && (
-                <Link
-                  to="/omakase"
-                  className="bg-black md:w-full  inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-2xl border border-secondary/40 hover:scale-105 transition-transform text-contrast justify-center text-base-fg font-semibold"
-                >
-                  <button className="bg-clip-text bg-gradient-to-br  from-yellow-300 to-yellow-50 flex items-center gap-2">
+                <Link to="/omakase" className=" ">
+                  <button className="bg-black py-3 md:w-full flex w-full items-center  text-sm px-3 rounded-2xl border bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-50  gap-2  border-secondary/40 hover:scale-105 transition-transform text-contrast justify-center text-base-fg font-semibold">
                     <span className=" text-transparent">Omakase</span>
                     <FaArrowRight className="text-white"></FaArrowRight>
+                    <span
+                      className="i-heroicons-arrow-right-20-solid"
+                      aria-hidden
+                    />
                   </button>
-                  <span
-                    className="i-heroicons-arrow-right-20-solid"
-                    aria-hidden
-                  />
                 </Link>
               )}
+            </li>
+            <li>
               <ReservationButton></ReservationButton>
-            </div>
+            </li>
           </ul>
         </Motion.header>
       ) : (

@@ -54,6 +54,7 @@ export default function ThemeToggle() {
               : "hover:bg-secondary/20 text-muted"
           }`}
           aria-pressed={theme === mode}
+          aria-label={`${theme} mode toggle`}
         >
           {mode === "light" ? (
             <FaSun></FaSun>
