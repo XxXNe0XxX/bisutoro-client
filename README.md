@@ -149,16 +149,24 @@ VITE_LOG_LEVEL=debug | info | warn | error | silent
 
 ✅ Available Scripts
 Command Description
-npm run dev Start development server
-npm run build Build the app for production
-npm run preview Preview the production build locally
+```bash
+npm run dev /* Start development server */
+npm run build /* Build the app for production */
+npm run preview /* Preview the production build locally */
+```
 
 🧱 Tech Stack
+
 Tool Purpose
+
 React UI library for building components
+
 Vite Fast development and build tool
+
 Tailwind CSS Utility-first styling framework
+
 Render Hosting and deployment platform
+
 JavaScript (ES6+) Core programming language
 
 🔮 Future Improvements
@@ -174,6 +182,7 @@ JavaScript (ES6+) Core programming language
 👨‍💻 Author
 
 Jose
+
 Front-End Developer passionate about clean UI, smooth UX, and modern web technologies.
 
 🔗 Live Project [https://bisutoro-client.onrender.com/menu]
