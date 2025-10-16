@@ -20,25 +20,6 @@ This project was designed to:
 
 ---
 
-## 📁 Project Structure
-
-bisutoro-client/
-├── public/ # Static assets (favicon, HTML template)
-├── src/
-│ ├── assets/ # Images, icons, etc.
-│ ├── components/ # Reusable React components
-│ ├── pages/ # Main route-based views
-│ ├── styles/ # Custom CSS or Tailwind extensions
-│ ├── App.jsx # Root component
-│ └── main.jsx # Entry point
-├── .env.development.example # Sample environment config
-├── .env.production.example # Sample production config
-├── tailwind.config.js # Tailwind configuration
-├── vite.config.js # Vite configuration
-└── render.yaml # Render deployment configuration
-
----
-
 ## 🚀 Features
 
 - ⚡ **Fast development** with Vite
