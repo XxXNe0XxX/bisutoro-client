@@ -376,21 +376,19 @@ export default function MenuPage() {
           <ul className="md:w-auto w-full text-start rounded-2xl  text-sm md:text-nowrap space-y-2 ">
             <li className="flex flex-wrap justify-center gap-2 *:w-full *:h-full items-center">
               {publicSettings.data?.show_omakase_section !== false && (
-                <Link to="/omakase" className=" ">
-                  <button className="bg-black py-3 md:w-full flex w-full items-center  text-sm px-3 rounded-2xl border bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-50  gap-2  border-secondary/40 hover:scale-105 transition-transform text-contrast justify-center text-base-fg font-semibold">
-                    <span className=" text-transparent">Omakase</span>
-                    <FaArrowRight className="text-white"></FaArrowRight>
-                    <span
-                      className="i-heroicons-arrow-right-20-solid"
-                      aria-hidden
-                    />
+                <Link
+                  to="/omakase"
+                  className="md:w-full w-full text-sm px-3 py-2.5 rounded-2xl border active:scale-95 border-secondary/40 hover:scale-105 transition-transform bg-black font-semibold  "
+                >
+                  <button className="  flex items-center justify-center gap-2 text-center w-full bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-600 ">
+                    <span className="text-transparent">Omakase</span>
                   </button>
                 </Link>
               )}
             </li>
-            <li>
+            <Motion.li whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <ReservationButton></ReservationButton>
-            </li>
+            </Motion.li>
           </ul>
         </Motion.header>
       ) : (

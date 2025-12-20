@@ -89,12 +89,9 @@ export default function OmakasePage() {
         </Motion.p>
         <Motion.div
           variants={item}
-          className="flex flex-wrap gap-4 py-2 mb-12 items-center"
+          className="flex flex-wrap gap-4 py-2  items-center justify-start"
         >
-          <Motion.div
-            whileHover={{ y: -1, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+          <Motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
               to="/menu"
               className="p-3 font-semibold text-nowrap text-center rounded-2xl bg-primary text-contrast "
@@ -102,10 +99,7 @@ export default function OmakasePage() {
               View the Menu
             </Link>
           </Motion.div>
-          <Motion.div
-            whileHover={{ y: -1, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+          <Motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <ReservationButton />
           </Motion.div>
         </Motion.div>
