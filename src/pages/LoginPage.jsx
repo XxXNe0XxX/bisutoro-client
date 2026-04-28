@@ -31,7 +31,12 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6 p-3 max-w-[480px] mx-auto">
-      <h1 className="text-2xl font-bold text-primary">Sign in</h1>
+      <div className="border border-secondary p-2 rounded-md animate-pulse">
+        <h1 className="text-primary text-2xl font-bold ">Demo Only</h1>
+        <p>username: admin@gmail.com</p>
+        <p>password: StrongPass123</p>
+      </div>
+      <h1 className="text-2xl font-bold text-primary">Log in</h1>
       <form onSubmit={onSubmit} className="space-y-4 ">
         <div className="space-y-1">
           <label className="text-sm text-muted">Email</label>
