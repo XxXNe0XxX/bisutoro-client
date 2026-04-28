@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6 p-3 max-w-[480px] mx-auto">
-      <div className="border border-secondary p-2 rounded-md animate-pulse">
+      <div className="border border-secondary p-2 rounded-md animate-pulse text-base-fg">
         <h1 className="text-primary text-2xl font-bold ">Demo Only</h1>
         <p>username: admin@gmail.com</p>
         <p>password: StrongPass123</p>
