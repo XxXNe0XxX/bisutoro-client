@@ -11,7 +11,7 @@ export default function Navbar({ items }) {
       { to: "/omakase", label: "Omakase" },
       { to: "/about", label: "About" },
     ],
-    []
+    [],
   );
   const navItems = Array.isArray(items) && items.length ? items : defaultItems;
 
@@ -40,7 +40,11 @@ export default function Navbar({ items }) {
       {/* Mobile top bar */}
       <header className="md:hidden sticky top-0 z-40 shadow-xs shadow-gray-500 bg-background ">
         <div className="flex items-center justify-between h-14 px-3 ">
-          <div className="flex items-center gap-2 text-primary">
+          <NavLink
+            to="/"
+            className="flex items-center gap-2 text-primary"
+            onClick={() => setOpen(false)}
+          >
             <Logo className="h-8 w-auto block fill-current" aria-hidden />
             {location.pathname.includes("dashboard") ? (
               <span className="font-semibold text-nowrap">
@@ -54,7 +58,7 @@ export default function Navbar({ items }) {
                 <span className="text-xs">マガジンストリートビストロ</span>
               </div>
             )}
-          </div>
+          </NavLink>
           <div className="flex items-center gap-2">
             <button
               aria-label="Menu"
@@ -93,7 +97,11 @@ export default function Navbar({ items }) {
         aria-label="Sidebar navigation"
       >
         <div className="h-14 px-3 flex items-center justify-between border-b border-secondary/40 ">
-          <div className="flex items-center gap-2 text-primary">
+          <NavLink
+            to="/"
+            className="flex items-center gap-2 text-primary"
+            onClick={() => setOpen(false)}
+          >
             <Logo className="h-8 w-auto block fill-current" aria-hidden />
             {location.pathname.includes("dashboard") ? (
               <span className="font-semibold text-nowrap">
@@ -107,7 +115,7 @@ export default function Navbar({ items }) {
                 <span className="text-xs">マガジンストリートビストロ</span>
               </div>
             )}
-          </div>
+          </NavLink>
           <button
             aria-label="Close"
             onClick={() => setOpen(false)}
